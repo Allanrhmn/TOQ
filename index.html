@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>⚽ Soccer Team Manager</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Segoe UI',system-ui,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh;}
+    /* LANDING */
+    .landing{min-height:100vh;display:flex;flex-direction:column;background:radial-gradient(ellipse at 20% 20%,#1e3a5f 0%,#0f172a 55%);}
+    .landing-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 32px;border-bottom:1px solid #1e293b;}
+    .landing-logo{font-size:1.3rem;font-weight:900;color:#22c55e;display:flex;align-items:center;gap:8px;}
+    .landing-hero{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px 40px;text-align:center;}
+    .landing-title{font-size:clamp(2rem,6vw,3.5rem);font-weight:900;background:linear-gradient(135deg,#22c55e 0%,#3b82f6 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:14px;line-height:1.1;}
+    .landing-sub{font-size:1.05rem;color:#94a3b8;margin-bottom:48px;max-width:500px;line-height:1.7;}
+    .landing-btns{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;margin-bottom:56px;}
+    .lbtn{padding:15px 32px;border-radius:14px;border:none;cursor:pointer;font-weight:700;font-size:1rem;transition:all 0.22s;display:flex;align-items:center;gap:10px;letter-spacing:0.01em;}
+    .lbtn-coach{background:linear-gradient(135deg,#22c55e,#16a34a);color:#0f172a;box-shadow:0 4px 24px rgba(34,197,94,0.4);}
+    .lbtn-coach:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(34,197,94,0.55);}
+    .lbtn-player{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;box-shadow:0 4px 24px rgba(59,130,246,0.4);}
+    .lbtn-player:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(59,130,246,0.55);}
+    .lbtn-register{background:transparent;color:#e2e8f0;border:2px solid #334155;}
+    .lbtn-register:hover{border-color:#475569;background:#1e293b;transform:translateY(-2px);}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:14px;max-width:860px;width:100%;padding:0 16px;}
+    .fcard{background:#1e293b88;border:1px solid #334155;border-radius:14px;padding:20px 16px;text-align:center;backdrop-filter:blur(4px);}
+    .fcard-icon{font-size:2rem;margin-bottom:10px;}
+    .fcard-title{font-size:0.88rem;font-weight:700;color:#e2e8f0;margin-bottom:5px;}
+    .fcard-desc{font-size:0.72rem;color:#64748b;line-height:1.55;}
+    .demo-hint{margin-top:28px;font-size:0.76rem;color:#475569;}
+    .demo-hint code{background:#1e293b;padding:2px 7px;border-radius:4px;color:#94a3b8;}
+    /* AUTH MODAL */
+    .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(6px);}
+    .auth-box{background:#1e293b;border-radius:18px;padding:30px;width:100%;max-width:400px;border:1px solid #334155;box-shadow:0 24px 64px rgba(0,0,0,0.6);}
+    .auth-title{font-size:1.4rem;font-weight:800;margin-bottom:5px;}
+    .auth-sub{font-size:0.82rem;color:#64748b;margin-bottom:22px;}
+    .auth-field{margin-bottom:15px;}
+    .auth-field label{display:block;font-size:0.7rem;font-weight:700;color:#94a3b8;margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px;}
+    .auth-input{width:100%;background:#0f172a;border:1.5px solid #334155;color:#f1f5f9;padding:11px 13px;border-radius:9px;font-size:0.9rem;outline:none;transition:border .15s;}
+    .auth-input:focus{border-color:#22c55e;}
+    .auth-btn{width:100%;padding:12px;border-radius:10px;border:none;cursor:pointer;font-weight:700;font-size:0.95rem;margin-top:6px;transition:all .18s;}
+    .auth-btn-green{background:linear-gradient(135deg,#22c55e,#16a34a);color:#0f172a;}
+    .auth-btn-blue{background:linear-gradient(135deg,#3b82f6,#2563eb);color:#fff;}
+    .auth-btn:hover{opacity:.9;transform:translateY(-1px);}
+    .auth-err{background:#f871711a;border:1px solid #f87171;border-radius:8px;padding:9px 12px;font-size:0.8rem;color:#f87171;margin-bottom:12px;}
+    .auth-link{text-align:center;margin-top:15px;font-size:0.8rem;color:#64748b;}
+    .auth-link span{color:#22c55e;cursor:pointer;font-weight:600;}
+    .rbadge{display:inline-flex;align-items:center;gap:6px;padding:5px 13px;border-radius:20px;font-size:0.78rem;font-weight:700;margin-bottom:20px;}
+    .rbadge-coach{background:#22c55e1a;color:#22c55e;border:1px solid #22c55e44;}
+    .rbadge-player{background:#3b82f61a;color:#60a5fa;border:1px solid #3b82f644;}
+    /* NAV */
+    .nav{background:#1e293b;border-bottom:2px solid #22c55e;padding:0 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;position:sticky;top:0;z-index:100;}
+    .nav-logo{font-size:1.1rem;font-weight:800;color:#22c55e;padding:12px 0;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+    .nav-tabs{display:flex;flex-wrap:wrap;flex:1;}
+    .nav-tab{padding:14px 9px;cursor:pointer;color:#94a3b8;font-weight:600;font-size:0.73rem;border-bottom:3px solid transparent;transition:all .2s;white-space:nowrap;}
+    .nav-tab:hover{color:#e2e8f0;}
+    .nav-tab.active{color:#22c55e;border-bottom-color:#22c55e;}
+    .nav-right{display:flex;align-items:center;gap:8px;padding:7px 0;margin-left:auto;}
+    .nav-user{display:flex;align-items:center;gap:7px;padding:5px 9px;border-radius:8px;background:#0f172a;border:1px solid #334155;}
+    .nav-avatar{width:27px;height:27px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.65rem;}
+    .av-coach{background:#22c55e22;color:#22c55e;border:1.5px solid #22c55e;}
+    .av-player{background:#3b82f622;color:#60a5fa;border:1.5px solid #3b82f6;}
+    .nav-uname{font-size:0.76rem;font-weight:600;}
+    .logout-btn{background:none;border:1px solid #334155;color:#64748b;cursor:pointer;padding:5px 9px;border-radius:6px;font-size:0.7rem;font-weight:600;transition:all .15s;}
+    .logout-btn:hover{border-color:#f87171;color:#f87171;}
+    /* NOTIFICATIONS */
+    .nwrap{position:relative;}
+    .nbtn{background:none;border:none;cursor:pointer;padding:5px;border-radius:7px;font-size:1.1rem;color:#94a3b8;transition:background .15s;}
+    .nbtn:hover{background:#334155;}
+    .nbadge{position:absolute;top:0;right:0;background:#ef4444;color:#fff;border-radius:10px;font-size:0.52rem;font-weight:800;padding:1px 4px;min-width:14px;text-align:center;line-height:1.5;}
+    .ndrop{position:absolute;top:calc(100% + 8px);right:0;width:295px;background:#1e293b;border:1px solid #334155;border-radius:12px;box-shadow:0 10px 40px rgba(0,0,0,0.55);z-index:300;overflow:hidden;}
+    .ndrop-hdr{padding:11px 14px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;}
+    .ndrop-hdr span{font-size:0.78rem;font-weight:700;}
+    .nclear{font-size:0.69rem;color:#22c55e;cursor:pointer;background:none;border:none;}
+    .nitem{padding:9px 14px;border-bottom:1px solid #1e293b55;cursor:pointer;transition:background .1s;display:flex;gap:9px;align-items:flex-start;}
+    .nitem:hover{background:#0f172a55;}
+    .nitem.unread{background:#22c55e07;}
+    .ndot{width:7px;height:7px;border-radius:50%;background:#22c55e;margin-top:5px;flex-shrink:0;}
+    .ndot.read{background:transparent;border:1.5px solid #334155;}
+    .ntext{font-size:0.76rem;color:#e2e8f0;line-height:1.4;}
+    .ndate{font-size:0.66rem;color:#475569;margin-top:1px;}
+    .nempty{padding:22px;text-align:center;font-size:0.8rem;color:#475569;}
+    /* LAYOUT */
+    .page{padding:20px 24px;max-width:1200px;margin:0 auto;}
+    .page-title{font-size:1.35rem;font-weight:800;margin-bottom:18px;}
+    /* CARDS */
+    .card{background:#1e293b;border-radius:12px;padding:16px;border:1px solid #334155;}
+    .card-title{font-size:0.7rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;}
+    /* BUTTONS */
+    .btn{padding:7px 14px;border-radius:8px;border:none;cursor:pointer;font-weight:600;font-size:0.82rem;transition:all .15s;}
+    .btn-green{background:#22c55e;color:#0f172a;}.btn-green:hover{background:#16a34a;}
+    .btn-blue{background:#3b82f6;color:#fff;}.btn-blue:hover{background:#2563eb;}
+    .btn-outline{background:transparent;color:#94a3b8;border:1px solid #334155;}.btn-outline:hover{border-color:#22c55e;color:#22c55e;}
+    .btn-danger{background:transparent;color:#f87171;border:1px solid #334155;}.btn-danger:hover{background:#f87171;color:#fff;}
+    .btn-sm{padding:4px 10px;font-size:0.72rem;}
+    .btn-icon{background:none;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;transition:background .15s;font-size:0.9rem;}
+    .btn-icon:hover{background:#334155;}
+    /* FORMS */
+    .form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;margin-bottom:16px;}
+    .form-group{display:flex;flex-direction:column;gap:5px;}
+    .form-group label{font-size:0.72rem;color:#94a3b8;font-weight:600;}
+    .form-input{background:#0f172a;border:1px solid #334155;color:#f1f5f9;padding:7px 10px;border-radius:8px;font-size:0.82rem;outline:none;}
+    .form-input:focus{border-color:#22c55e;}
+    .form-select{background:#0f172a;border:1px solid #334155;color:#f1f5f9;padding:7px 10px;border-radius:8px;font-size:0.82rem;outline:none;}
+    .form-select:focus{border-color:#22c55e;}
+    textarea.form-input{resize:vertical;min-height:75px;font-family:inherit;}
+    /* BADGES */
+    .pos-badge{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.65rem;font-weight:700;}
+    .pos-GK{background:#fbbf2422;color:#fbbf24;}.pos-DEF{background:#3b82f622;color:#60a5fa;}
+    .pos-MID{background:#22c55e22;color:#22c55e;}.pos-FWD{background:#f8717122;color:#f87171;}
+    /* ROSTER TABLE */
+    .roster-table{width:100%;border-collapse:collapse;}
+    .roster-table th{text-align:left;padding:8px 11px;font-size:0.67rem;text-transform:uppercase;letter-spacing:1px;color:#64748b;border-bottom:1px solid #334155;}
+    .roster-table td{padding:10px 11px;border-bottom:1px solid #1e293b55;font-size:0.84rem;}
+    .roster-table tr:hover td{background:#0f172a33;}
+    /* LINEUP */
+    .lineup-wrapper{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;}
+    .pitch{border-radius:10px;position:relative;border:3px solid rgba(0,0,0,0.35);overflow:hidden;flex-shrink:0;transition:background .4s;}
+    .pitch-player{position:absolute;transform:translate(-50%,-50%);text-align:center;cursor:pointer;z-index:20;}
+    .pitch-player-name{font-size:0.6rem;color:#fff;font-weight:800;white-space:nowrap;text-shadow:0 1px 4px rgba(0,0,0,0.9),0 0 8px rgba(0,0,0,0.6);max-width:58px;overflow:hidden;text-overflow:ellipsis;text-align:center;letter-spacing:0.01em;background:rgba(0,0,0,0.3);padding:1px 4px;border-radius:3px;margin-top:3px;}
+    .pitch-jersey-wrap{display:flex;justify-content:center;transition:transform .18s;}
+    .pitch-player:hover .pitch-jersey-wrap{transform:scale(1.15);}
+    .pitch-color-bar{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px;}
+    .pitch-color-swatch{width:22px;height:22px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:all .15s;flex-shrink:0;}
+    .pitch-color-swatch.active{border-color:#fff;box-shadow:0 0 0 2px rgba(255,255,255,0.4);transform:scale(1.15);}
+    .draft-btn{flex:1;padding:7px;border-radius:8px;border:1px solid #334155;background:transparent;color:#64748b;cursor:pointer;font-size:0.72rem;font-weight:700;transition:all .15s;text-align:center;}
+    .draft-btn.active{background:#22c55e1a;border-color:#22c55e;color:#22c55e;}
+    .poss-tab{flex:1;padding:7px;text-align:center;cursor:pointer;font-size:0.75rem;font-weight:700;color:#64748b;background:transparent;border:none;transition:all .15s;}
+    .poss-tab.active{background:#22c55e;color:#0f172a;border-radius:6px;}
+    .sub-item{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #334155;}
+    .sub-item:last-child{border-bottom:none;}
+    .player-popup{position:fixed;z-index:1000;background:#1e293b;border:1px solid #334155;border-radius:10px;padding:6px;min-width:155px;max-height:270px;overflow-y:auto;box-shadow:0 8px 32px rgba(0,0,0,.5);}
+    .player-popup-item{padding:6px 10px;cursor:pointer;border-radius:6px;font-size:0.8rem;display:flex;align-items:center;gap:8px;}
+    .player-popup-item:hover{background:#334155;}
+    /* SCHEDULE */
+    .sched-week{display:flex;overflow-x:auto;}
+    .sched-day{min-width:110px;flex:1;border-right:1px solid #334155;}
+    .sched-day:last-child{border-right:none;}
+    .sched-day-hdr{padding:11px 8px;text-align:center;background:#0f172a;border-bottom:1px solid #334155;}
+    .sched-day-name{font-size:0.65rem;color:#64748b;text-transform:uppercase;letter-spacing:1px;}
+    .sched-day-num{font-size:1.3rem;font-weight:800;}
+    .sched-day-num.today{color:#22c55e;}
+    .sched-day-body{padding:7px;min-height:90px;}
+    .sched-event{padding:4px 7px;border-radius:5px;margin-bottom:4px;font-size:0.7rem;font-weight:600;cursor:pointer;}
+    .ev-match{background:#22c55e1a;color:#22c55e;border-left:3px solid #22c55e;}
+    .ev-training{background:#60a5fa1a;color:#60a5fa;border-left:3px solid #60a5fa;}
+    .ev-meeting{background:#fbbf241a;color:#fbbf24;border-left:3px solid #fbbf24;}
+    .ev-other{background:#a78bfa1a;color:#a78bfa;border-left:3px solid #a78bfa;}
+    .add-ev-btn{width:100%;background:none;border:1px dashed #334155;border-radius:5px;color:#475569;padding:3px;font-size:0.68rem;cursor:pointer;margin-top:3px;}
+    .add-ev-btn:hover{border-color:#22c55e;color:#22c55e;}
+    /* MATCHES */
+    .match-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;}
+    .match-card{background:#0f172a;border-radius:10px;padding:13px;border:1px solid #334155;}
+    .match-score-num{font-size:1.7rem;font-weight:800;}
+    .match-result{display:inline-block;padding:2px 6px;border-radius:4px;font-size:0.65rem;font-weight:700;}
+    .result-W{background:#22c55e1a;color:#22c55e;}.result-D{background:#fbbf241a;color:#fbbf24;}.result-L{background:#f871711a;color:#f87171;}
+    .stat-card{background:#1e293b;border-radius:10px;padding:13px 18px;border:1px solid #334155;flex:1;min-width:70px;text-align:center;}
+    .stat-num{font-size:1.7rem;font-weight:800;}
+    .stat-label{font-size:0.65rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+    /* MESSAGES */
+    .msg-layout{display:grid;grid-template-columns:265px 1fr;gap:14px;height:calc(100vh - 155px);min-height:420px;}
+    @media(max-width:700px){.msg-layout{grid-template-columns:1fr;height:auto;}}
+    .msg-list{background:#1e293b;border-radius:12px;border:1px solid #334155;overflow-y:auto;display:flex;flex-direction:column;}
+    .msg-list-hdr{padding:11px 14px;border-bottom:1px solid #334155;display:flex;justify-content:space-between;align-items:center;}
+    .msg-list-title{font-size:0.75rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:.5px;}
+    .msg-item{padding:11px 14px;border-bottom:1px solid #1e293b44;cursor:pointer;transition:background .1s;}
+    .msg-item:hover{background:#0f172a44;}
+    .msg-item.sel{background:#22c55e0f;border-left:3px solid #22c55e;}
+    .msg-from{font-size:0.8rem;font-weight:600;color:#e2e8f0;display:flex;justify-content:space-between;margin-bottom:2px;}
+    .msg-date{font-size:0.65rem;color:#475569;}
+    .msg-subj{font-size:0.75rem;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .msg-preview{font-size:0.7rem;color:#475569;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .msg-unread .msg-subj{color:#f1f5f9;font-weight:700;}
+    .msg-udot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;}
+    .msg-panel{background:#1e293b;border-radius:12px;border:1px solid #334155;display:flex;flex-direction:column;overflow:hidden;}
+    .msg-ph{padding:14px 18px;border-bottom:1px solid #334155;}
+    .msg-psubj{font-size:1rem;font-weight:700;margin-bottom:3px;}
+    .msg-pmeta{font-size:0.74rem;color:#64748b;}
+    .msg-pbody{flex:1;padding:18px;overflow-y:auto;line-height:1.75;font-size:0.88rem;color:#cbd5e1;}
+    .msg-reply{padding:12px;border-top:1px solid #334155;display:flex;gap:8px;align-items:flex-end;}
+    .msg-reply-in{flex:1;background:#0f172a;border:1px solid #334155;color:#f1f5f9;padding:8px 12px;border-radius:8px;font-size:0.82rem;outline:none;resize:none;min-height:58px;font-family:inherit;}
+    .msg-reply-in:focus{border-color:#22c55e;}
+    .msg-empty{display:flex;align-items:center;justify-content:center;flex-direction:column;height:100%;color:#475569;gap:8px;font-size:0.9rem;}
+    /* MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:500;display:flex;align-items:center;justify-content:center;padding:16px;}
+    .modal{background:#1e293b;border-radius:14px;padding:22px;width:100%;max-width:460px;border:1px solid #334155;max-height:90vh;overflow-y:auto;}
+    .modal-lg{max-width:640px;}
+    .modal-title{font-size:1rem;font-weight:700;margin-bottom:16px;}
+    .modal-footer{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;}
+    /* PLAYER DASHBOARD */
+    .phero{background:linear-gradient(135deg,#1e3a5f 0%,#1e293b 100%);border-radius:16px;padding:24px;border:1px solid #334155;margin-bottom:20px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
+    .phero-av{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:900;background:#3b82f622;border:3px solid #3b82f6;color:#60a5fa;flex-shrink:0;}
+    .phero-name{font-size:1.5rem;font-weight:800;margin-bottom:3px;}
+    .phero-sub{font-size:0.84rem;color:#94a3b8;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+    .qs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:10px;margin-bottom:20px;}
+    .qs-card{background:#1e293b;border-radius:10px;padding:14px;border:1px solid #334155;text-align:center;}
+    .qs-num{font-size:1.8rem;font-weight:800;}
+    .qs-lbl{font-size:0.63rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;margin-top:2px;}
+    /* STAT BARS */
+    .sbar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .sbar-lbl{font-size:0.76rem;color:#94a3b8;width:90px;flex-shrink:0;}
+    .sbar-track{flex:1;height:6px;background:#334155;border-radius:3px;overflow:hidden;}
+    .sbar-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+    .sbar-val{font-size:0.76rem;font-weight:700;width:32px;text-align:right;}
+    /* TEAM STATS */
+    .ts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:12px;margin-bottom:18px;}
+    .ts-card{background:#1e293b;border-radius:12px;padding:16px;border:1px solid #334155;text-align:center;}
+    .ts-num{font-size:2.2rem;font-weight:900;}
+    .ts-lbl{font-size:0.67rem;color:#64748b;text-transform:uppercase;letter-spacing:.5px;}
+    /* MIN LOG */
+    .min-table{width:100%;border-collapse:collapse;font-size:0.8rem;}
+    .min-table th{padding:7px 10px;text-align:center;color:#64748b;font-size:0.64rem;text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid #334155;}
+    .min-table th:first-child{text-align:left;}
+    .min-table td{padding:9px 10px;text-align:center;border-bottom:1px solid #1e293b55;}
+    .min-table td:first-child{text-align:left;}
+    .min-table tr:hover td{background:#0f172a22;}
+    /* SCROLLBAR */
+    ::-webkit-scrollbar{width:5px;height:5px;}
+    ::-webkit-scrollbar-track{background:#0f172a;}
+    ::-webkit-scrollbar-thumb{background:#334155;border-radius:3px;}
+    /* UTILS */
+    .flex{display:flex;}.items-center{align-items:center;}.justify-between{justify-content:space-between;}
+    .gap-2{gap:8px;}.mb-3{margin-bottom:12px;}.mb-4{margin-bottom:16px;}
+    .text-muted{color:#64748b;font-size:0.8rem;}
+    .empty-state{text-align:center;padding:32px;color:#475569;}
+    .divider{border:none;border-top:1px solid #334155;margin:10px 0;}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    @media(max-width:600px){.grid-2{grid-template-columns:1fr;}}
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useRef, useEffect } = React;
+
+// ─── SEED DATA ────────────────────────────────────────────────────────────────
+const POSITIONS=['GK','DEF','MID','FWD'];
+const STATUSES=['Ready','Injured','Suspended','Not in form'];
+const LOG_POSITIONS=['GK','CB','FB','WB','DM','CM','AM','W','ST'];
+
+const FORMATIONS={
+  '4-4-2':{slots:[
+    {id:'gk',pos:'GK',x:50,y:91},
+    {id:'rb',pos:'DEF',x:82,y:75},{id:'rcb',pos:'DEF',x:62,y:75},{id:'lcb',pos:'DEF',x:38,y:75},{id:'lb',pos:'DEF',x:18,y:75},
+    {id:'rm',pos:'MID',x:80,y:54},{id:'rcm',pos:'MID',x:60,y:54},{id:'lcm',pos:'MID',x:40,y:54},{id:'lm',pos:'MID',x:20,y:54},
+    {id:'rs',pos:'FWD',x:65,y:22},{id:'ls',pos:'FWD',x:35,y:22},
+  ]},
+  '4-3-3':{slots:[
+    {id:'gk',pos:'GK',x:50,y:91},
+    {id:'rb',pos:'DEF',x:82,y:75},{id:'rcb',pos:'DEF',x:62,y:75},{id:'lcb',pos:'DEF',x:38,y:75},{id:'lb',pos:'DEF',x:18,y:75},
+    {id:'rcm',pos:'MID',x:67,y:54},{id:'cm',pos:'MID',x:50,y:49},{id:'lcm',pos:'MID',x:33,y:54},
+    {id:'rw',pos:'FWD',x:78,y:22},{id:'st',pos:'FWD',x:50,y:16},{id:'lw',pos:'FWD',x:22,y:22},
+  ]},
+  '4-2-3-1':{slots:[
+    {id:'gk',pos:'GK',x:50,y:91},
+    {id:'rb',pos:'DEF',x:82,y:77},{id:'rcb',pos:'DEF',x:62,y:77},{id:'lcb',pos:'DEF',x:38,y:77},{id:'lb',pos:'DEF',x:18,y:77},
+    {id:'rdm',pos:'MID',x:63,y:61},{id:'ldm',pos:'MID',x:37,y:61},
+    {id:'ram',pos:'MID',x:75,y:40},{id:'cam',pos:'MID',x:50,y:39},{id:'lam',pos:'MID',x:25,y:40},
+    {id:'st',pos:'FWD',x:50,y:18},
+  ]},
+  '3-5-2':{slots:[
+    {id:'gk',pos:'GK',x:50,y:91},
+    {id:'rcb',pos:'DEF',x:70,y:75},{id:'cb',pos:'DEF',x:50,y:77},{id:'lcb',pos:'DEF',x:30,y:75},
+    {id:'rwb',pos:'MID',x:88,y:54},{id:'rcm',pos:'MID',x:67,y:51},{id:'cm',pos:'MID',x:50,y:48},{id:'lcm',pos:'MID',x:33,y:51},{id:'lwb',pos:'MID',x:12,y:54},
+    {id:'rs',pos:'FWD',x:65,y:22},{id:'ls',pos:'FWD',x:35,y:22},
+  ]},
+  '5-3-2':{slots:[
+    {id:'gk',pos:'GK',x:50,y:91},
+    {id:'rwb',pos:'DEF',x:88,y:73},{id:'rcb',pos:'DEF',x:70,y:77},{id:'cb',pos:'DEF',x:50,y:79},{id:'lcb',pos:'DEF',x:30,y:77},{id:'lwb',pos:'DEF',x:12,y:73},
+    {id:'rcm',pos:'MID',x:67,y:52},{id:'cm',pos:'MID',x:50,y:49},{id:'lcm',pos:'MID',x:33,y:52},
+    {id:'rs',pos:'FWD',x:65,y:22},{id:'ls',pos:'FWD',x:35,y:22},
+  ]},
+};
+
+const INIT_USERS=[
+  {id:'u0',name:'Coach Marco',role:'coach',email:'coach@team.dk',password:'1234'},
+  {id:'u1',name:'Alex Turner',role:'player',playerId:1,email:'alex@team.dk',password:'1234'},
+  {id:'u2',name:'Jamie Silva',role:'player',playerId:2,email:'jamie@team.dk',password:'1234'},
+  {id:'u3',name:'Chris Morgan',role:'player',playerId:3,email:'chris@team.dk',password:'1234'},
+  {id:'u4',name:'Sam Okafor',role:'player',playerId:4,email:'sam@team.dk',password:'1234'},
+  {id:'u5',name:'Maria Santos',role:'player',playerId:5,email:'maria@team.dk',password:'1234'},
+];
+const INIT_PLAYERS=[
+  {id:1,userId:'u1',name:'Alex Turner',number:'1',position:'GK',rating:'78',status:'Ready',stats:{matches:15,goals:0,assists:2,yellow:1,red:0,minutes:1260,clean:6}},
+  {id:2,userId:'u2',name:'Jamie Silva',number:'5',position:'DEF',rating:'74',status:'Ready',stats:{matches:14,goals:1,assists:3,yellow:2,red:0,minutes:1180,clean:0}},
+  {id:3,userId:'u3',name:'Chris Morgan',number:'8',position:'MID',rating:'81',status:'Injured',stats:{matches:10,goals:2,assists:4,yellow:1,red:0,minutes:820,clean:0}},
+  {id:4,userId:'u4',name:'Sam Okafor',number:'10',position:'FWD',rating:'86',status:'Ready',stats:{matches:15,goals:8,assists:5,yellow:2,red:0,minutes:1240,clean:0}},
+  {id:5,userId:'u5',name:'Maria Santos',number:'7',position:'MID',rating:'79',status:'Ready',stats:{matches:13,goals:3,assists:6,yellow:0,red:0,minutes:1020,clean:0}},
+];
+const INIT_MESSAGES=[
+  {id:1,from:'u0',fromName:'Coach Marco',to:'all',subject:'Træning torsdag',body:'Husk træning torsdag kl. 18:30. Mød op i fuld udstyr. Vi arbejder på sætstykker og pressing denne uge — god forberedelse til søndagens kamp.',date:'2026-03-28',readBy:['u0']},
+  {id:2,from:'u0',fromName:'Coach Marco',to:'u3',subject:'Skadesupdate',body:'Chris, hvornår forventer du at være klar til spil igen? Skriv gerne til mig med en opdatering fra din fysioterapeut. Vi holder tomlen oppe!',date:'2026-03-29',readBy:['u0']},
+  {id:3,from:'u4',fromName:'Sam Okafor',to:'u0',subject:'Forespørgsel om kampposition',body:'Hej coach, kan vi snakke om min position i næste kamp? Jeg tror jeg spiller bedst på venstre wing frem for central angriber. Hvad tænker du?',date:'2026-03-30',readBy:['u4']},
+];
+const INIT_NOTIFS={
+  'u0':[
+    {id:1,msg:'Sam Okafor sendte dig en besked',type:'message',date:'2026-03-30',read:false},
+    {id:2,msg:'Chris Morgan opdateret til Skadet',type:'alert',date:'2026-03-28',read:false},
+  ],
+  'u1':[
+    {id:1,msg:'Coach: Ny holdbesked modtaget',type:'message',date:'2026-03-28',read:false},
+    {id:2,msg:'Ny kamp: 6. april vs FC Aarhus',type:'match',date:'2026-03-27',read:true},
+  ],
+  'u2':[{id:1,msg:'Coach: Ny holdbesked modtaget',type:'message',date:'2026-03-28',read:false}],
+  'u3':[
+    {id:1,msg:'Coach sendte dig en personlig besked',type:'message',date:'2026-03-29',read:false},
+    {id:2,msg:'Coach: Ny holdbesked modtaget',type:'message',date:'2026-03-28',read:true},
+  ],
+  'u4':[{id:1,msg:'Træning torsdag kl. 18:30',type:'training',date:'2026-03-28',read:false}],
+  'u5':[{id:1,msg:'Coach: Ny holdbesked modtaget',type:'message',date:'2026-03-28',read:false}],
+};
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function posColor(p){return p==='GK'?'#fbbf24':p==='DEF'?'#60a5fa':p==='MID'?'#22c55e':'#f87171';}
+function initials(n){return n.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,3)||'?';}
+function statusDot(s){return{Ready:'#22c55e',Injured:'#f87171',Suspended:'#fbbf24','Not in form':'#94a3b8'}[s]||'#64748b';}
+function makeDraft(){return{formation:'4-4-2',lineup:{},inPoss:'',outPoss:''};}
+function fmtDate(d){try{return new Date(d).toLocaleDateString('da-DK',{day:'numeric',month:'short'});}catch{return d;}}
+
+// ─── LANDING PAGE ─────────────────────────────────────────────────────────────
+function LandingPage({onCoach,onPlayer,onRegister}){
+  const features=[
+    {icon:'👥',title:'Holdoversigt',desc:'Administrér spillere, positioner og status i ét overblik'},
+    {icon:'🏟️',title:'Opstilling',desc:'Visuel opstillings-builder med 5 formationer og 3 udkast'},
+    {icon:'⚽',title:'Taktiktavle',desc:'Tegn sætstykker og øvelser direkte på en interaktiv bane'},
+    {icon:'📅',title:'Program',desc:'Ugentlig kalender med kampe, træning og møder'},
+    {icon:'💬',title:'Beskeder',desc:'Direkte kommunikation mellem coach og spillere'},
+    {icon:'📊',title:'Statistik',desc:'Mål, assists, minutter og karakterer for hver spiller'},
+  ];
+  return (
+    <div className="landing">
+      <div className="landing-nav">
+        <div className="landing-logo">⚽ TeamManager</div>
+        <div style={{fontSize:'0.78rem',color:'#475569'}}>v2.0 — Coach + Player Edition</div>
+      </div>
+      <div className="landing-hero">
+        <div style={{fontSize:'4.5rem',marginBottom:12}}>⚽</div>
+        <div className="landing-title">Soccer Team Manager</div>
+        <div className="landing-sub">Alt hvad din klub behøver — kampplanlægning, holdoversigt, taktik og direkte kommunikation mellem coach og spillere.</div>
+        <div className="landing-btns">
+          <button className="lbtn lbtn-coach" onClick={onCoach}>🎯 Login som Coach</button>
+          <button className="lbtn lbtn-player" onClick={onPlayer}>⚽ Login som Spiller</button>
+          <button className="lbtn lbtn-register" onClick={onRegister}>＋ Opret bruger</button>
+        </div>
+        <div className="feature-grid">
+          {features.map((f,i)=>(
+            <div key={i} className="fcard">
+              <div className="fcard-icon">{f.icon}</div>
+              <div className="fcard-title">{f.title}</div>
+              <div className="fcard-desc">{f.desc}</div>
+            </div>
+          ))}
+        </div>
+        <div className="demo-hint">Demo-konti: <code>coach@team.dk</code> / <code>sam@team.dk</code> — password: <code>1234</code></div>
+      </div>
+    </div>
+  );
+}
+
+// ─── LOGIN MODAL ──────────────────────────────────────────────────────────────
+function LoginModal({role,users,onLogin,onClose,onSwitch}){
+  const [email,setEmail]=useState('');
+  const [pw,setPw]=useState('');
+  const [err,setErr]=useState('');
+  function doLogin(){
+    const u=users.find(x=>x.email.toLowerCase()===email.toLowerCase()&&x.password===pw&&x.role===role);
+    if(!u){setErr('Forkert email eller adgangskode.');return;}
+    onLogin(u);
+  }
+  return (
+    <div className="auth-overlay" onClick={onClose}>
+      <div className="auth-box" onClick={e=>e.stopPropagation()}>
+        <div className={`rbadge rbadge-${role}`}>{role==='coach'?'🎯 Coach':'⚽ Spiller'}</div>
+        <div className="auth-title">Velkommen tilbage</div>
+        <div className="auth-sub">Log ind på dit {role==='coach'?'coach':'spiller'}-dashboard</div>
+        {err&&<div className="auth-err">{err}</div>}
+        <div className="auth-field"><label>Email</label><input className="auth-input" type="email" placeholder="din@email.dk" value={email} onChange={e=>{setEmail(e.target.value);setErr('');}} onKeyDown={e=>e.key==='Enter'&&doLogin()} /></div>
+        <div className="auth-field"><label>Adgangskode</label><input className="auth-input" type="password" placeholder="••••••••" value={pw} onChange={e=>{setPw(e.target.value);setErr('');}} onKeyDown={e=>e.key==='Enter'&&doLogin()} /></div>
+        <button className={`auth-btn auth-btn-${role==='coach'?'green':'blue'}`} onClick={doLogin}>Log ind</button>
+        <div className="auth-link"><span onClick={onClose}>← Tilbage</span> · Ingen konto? <span onClick={onSwitch}>Opret bruger</span></div>
+      </div>
+    </div>
+  );
+}
+
+// ─── REGISTER MODAL ───────────────────────────────────────────────────────────
+function RegisterModal({users,setUsers,players,setPlayers,onClose,onDone}){
+  const [form,setForm]=useState({name:'',email:'',pw:'',role:'player'});
+  const [err,setErr]=useState('');
+  function doReg(){
+    if(!form.name.trim()||!form.email.trim()||!form.pw.trim()){setErr('Udfyld alle felter.');return;}
+    if(users.find(u=>u.email.toLowerCase()===form.email.toLowerCase())){setErr('Email er allerede i brug.');return;}
+    const uid='u'+Date.now();
+    const newUser={id:uid,name:form.name,role:form.role,email:form.email,password:form.pw};
+    if(form.role==='player'){
+      const pid=Date.now();
+      newUser.playerId=pid;
+      setPlayers(prev=>[...prev,{id:pid,userId:uid,name:form.name,number:'',position:'MID',rating:'',status:'Ready',stats:{matches:0,goals:0,assists:0,yellow:0,red:0,minutes:0,clean:0}}]);
+    }
+    setUsers(prev=>[...prev,newUser]);
+    onDone(newUser);
+  }
+  return (
+    <div className="auth-overlay" onClick={onClose}>
+      <div className="auth-box" onClick={e=>e.stopPropagation()}>
+        <div className="auth-title">Opret bruger</div>
+        <div className="auth-sub">Opret din konto til Soccer Team Manager</div>
+        {err&&<div className="auth-err">{err}</div>}
+        <div className="auth-field"><label>Fulde navn</label><input className="auth-input" placeholder="Dit navn" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} /></div>
+        <div className="auth-field"><label>Email</label><input className="auth-input" type="email" placeholder="din@email.dk" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} /></div>
+        <div className="auth-field"><label>Adgangskode</label><input className="auth-input" type="password" placeholder="Mindst 4 tegn" value={form.pw} onChange={e=>setForm({...form,pw:e.target.value})} /></div>
+        <div className="auth-field"><label>Rolle</label>
+          <div style={{display:'flex',gap:10,marginTop:4}}>
+            {['player','coach'].map(r=>(
+              <div key={r} onClick={()=>setForm({...form,role:r})}
+                style={{flex:1,padding:'10px',borderRadius:9,border:`2px solid ${form.role===r?(r==='coach'?'#22c55e':'#3b82f6'):'#334155'}`,background:form.role===r?(r==='coach'?'#22c55e1a':'#3b82f61a'):'transparent',cursor:'pointer',textAlign:'center',fontSize:'0.82rem',fontWeight:700,color:form.role===r?(r==='coach'?'#22c55e':'#60a5fa'):'#64748b',transition:'all .15s'}}>
+                {r==='coach'?'🎯 Coach':'⚽ Spiller'}
+              </div>
+            ))}
+          </div>
+        </div>
+        <button className={`auth-btn auth-btn-${form.role==='coach'?'green':'blue'}`} onClick={doReg}>Opret konto</button>
+        <div className="auth-link"><span onClick={onClose}>← Tilbage til forsiden</span></div>
+      </div>
+    </div>
+  );
+}
+
+// ─── NOTIFICATION BELL ────────────────────────────────────────────────────────
+function NotifBell({notifs,setNotifs,uid}){
+  const [open,setOpen]=useState(false);
+  const myNotifs=notifs[uid]||[];
+  const unread=myNotifs.filter(n=>!n.read).length;
+  function markAll(){setNotifs(p=>({...p,[uid]:myNotifs.map(n=>({...n,read:true}))}));}
+  const icons={message:'💬',match:'⚽',training:'🏃',alert:'⚠️'};
+  return (
+    <div className="nwrap">
+      <button className="nbtn" onClick={()=>setOpen(o=>!o)}>
+        🔔{unread>0&&<span className="nbadge">{unread}</span>}
+      </button>
+      {open&&(
+        <div className="ndrop">
+          <div className="ndrop-hdr">
+            <span>Notifikationer {unread>0&&<span style={{color:'#22c55e'}}>({unread})</span>}</span>
+            {unread>0&&<button className="nclear" onClick={markAll}>Marker alle som læst</button>}
+          </div>
+          {myNotifs.length===0?<div className="nempty">Ingen notifikationer</div>:myNotifs.map(n=>(
+            <div key={n.id} className={`nitem${n.read?'':' unread'}`}
+              onClick={()=>setNotifs(p=>({...p,[uid]:myNotifs.map(x=>x.id===n.id?{...x,read:true}:x)}))}>
+              <div className={`ndot${n.read?' read':''}`}/>
+              <div>
+                <div className="ntext">{icons[n.type]||'📌'} {n.msg}</div>
+                <div className="ndate">{fmtDate(n.date)}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── ROSTER TAB ───────────────────────────────────────────────────────────────
+function RosterTab({players,setPlayers}){
+  const [form,setForm]=useState({name:'',number:'',position:'MID',rating:'',status:'Ready'});
+  const [editId,setEditId]=useState(null);
+  const [editForm,setEditForm]=useState(null);
+  function addPlayer(){if(!form.name.trim())return;setPlayers(prev=>[...prev,{id:Date.now(),...form,stats:{matches:0,goals:0,assists:0,yellow:0,red:0,minutes:0,clean:0}}]);setForm({name:'',number:'',position:'MID',rating:'',status:'Ready'});}
+  const sorted=[...players].sort((a,b)=>['GK','DEF','MID','FWD'].indexOf(a.position)-['GK','DEF','MID','FWD'].indexOf(b.position));
+  return (
+    <div className="page">
+      <div className="page-title">👥 Holdoversigt</div>
+      <div className="card mb-4">
+        <div className="card-title">Tilføj spiller</div>
+        <div className="form-row">
+          <div className="form-group"><label>Navn</label><input className="form-input" style={{width:165}} placeholder="Fulde navn" value={form.name} onChange={e=>setForm({...form,name:e.target.value})} onKeyDown={e=>e.key==='Enter'&&addPlayer()} /></div>
+          <div className="form-group"><label>Nr.</label><input className="form-input" style={{width:58}} type="number" placeholder="#" value={form.number} onChange={e=>setForm({...form,number:e.target.value})} /></div>
+          <div className="form-group"><label>Position</label><select className="form-select" value={form.position} onChange={e=>setForm({...form,position:e.target.value})}>{POSITIONS.map(p=><option key={p}>{p}</option>)}</select></div>
+          <div className="form-group"><label>Rating</label><input className="form-input" style={{width:65}} type="number" min="1" max="99" placeholder="–" value={form.rating} onChange={e=>setForm({...form,rating:e.target.value})} /></div>
+          <div className="form-group"><label>Status</label><select className="form-select" value={form.status} onChange={e=>setForm({...form,status:e.target.value})}>{STATUSES.map(s=><option key={s}>{s}</option>)}</select></div>
+          <div className="form-group"><label>&nbsp;</label><button className="btn btn-green" onClick={addPlayer}>＋ Tilføj</button></div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="flex items-center justify-between mb-3">
+          <div className="card-title" style={{margin:0}}>Trup — {players.length} spillere</div>
+          <div className="flex gap-2" style={{fontSize:'0.72rem'}}>
+            {['Ready','Injured','Suspended'].map(s=><span key={s} style={{color:statusDot(s)}}>● {s} {players.filter(p=>p.status===s).length}</span>)}
+          </div>
+        </div>
+        {players.length===0?<div className="empty-state">Ingen spillere endnu — tilføj dit hold ovenfor!</div>:(
+          <table className="roster-table">
+            <thead><tr><th>#</th><th>Navn</th><th>Pos</th><th>Rating</th><th>Mål</th><th>Assists</th><th>Kampe</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              {sorted.map(p=>editId===p.id?(
+                <tr key={p.id}>
+                  <td><input className="form-input" style={{width:52}} value={editForm.number} onChange={e=>setEditForm({...editForm,number:e.target.value})} /></td>
+                  <td><input className="form-input" style={{width:145}} value={editForm.name} onChange={e=>setEditForm({...editForm,name:e.target.value})} /></td>
+                  <td><select className="form-select" value={editForm.position} onChange={e=>setEditForm({...editForm,position:e.target.value})}>{POSITIONS.map(pos=><option key={pos}>{pos}</option>)}</select></td>
+                  <td><input className="form-input" style={{width:58}} type="number" min="1" max="99" value={editForm.rating} onChange={e=>setEditForm({...editForm,rating:e.target.value})} /></td>
+                  <td colSpan="3"></td>
+                  <td><select className="form-select" value={editForm.status} onChange={e=>setEditForm({...editForm,status:e.target.value})}>{STATUSES.map(s=><option key={s}>{s}</option>)}</select></td>
+                  <td><div className="flex gap-2"><button className="btn btn-green btn-sm" onClick={()=>{setPlayers(prev=>prev.map(pl=>pl.id===editId?{...pl,...editForm}:pl));setEditId(null);}}>Gem</button><button className="btn btn-outline btn-sm" onClick={()=>setEditId(null)}>Annuller</button></div></td>
+                </tr>
+              ):(
+                <tr key={p.id}>
+                  <td style={{color:'#64748b',fontWeight:700}}>{p.number||'–'}</td>
+                  <td style={{fontWeight:600}}>{p.name}</td>
+                  <td><span className={`pos-badge pos-${p.position}`}>{p.position}</span></td>
+                  <td>{p.rating?<span style={{color:'#fbbf24',fontWeight:700}}>{p.rating}</span>:<span className="text-muted">–</span>}</td>
+                  <td style={{color:'#22c55e',fontWeight:700}}>{p.stats?.goals||0}</td>
+                  <td style={{color:'#3b82f6',fontWeight:700}}>{p.stats?.assists||0}</td>
+                  <td style={{color:'#94a3b8'}}>{p.stats?.matches||0}</td>
+                  <td>
+                    <div className="flex items-center gap-2">
+                      <span style={{width:7,height:7,borderRadius:'50%',background:statusDot(p.status||'Ready'),flexShrink:0,display:'inline-block'}}></span>
+                      <select className="form-select" style={{padding:'2px 6px',fontSize:'0.72rem'}} value={p.status||'Ready'} onChange={e=>setPlayers(prev=>prev.map(pl=>pl.id===p.id?{...pl,status:e.target.value}:pl))}>
+                        {STATUSES.map(s=><option key={s}>{s}</option>)}
+                      </select>
+                    </div>
+                  </td>
+                  <td><div className="flex gap-2"><button className="btn-icon" onClick={()=>{setEditId(p.id);setEditForm({...p});}}>✏️</button><button className="btn-icon" onClick={()=>setPlayers(prev=>prev.filter(pl=>pl.id!==p.id))}>🗑️</button></div></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── LINEUP TAB ───────────────────────────────────────────────────────────────
+const PITCH_PRESETS=[
+  {label:'Klassisk',bg:'linear-gradient(180deg,#166534 0%,#15803d 50%,#166534 100%)',stripe:'rgba(0,0,0,0.05)'},
+  {label:'Lys',bg:'linear-gradient(180deg,#16a34a 0%,#22c55e 50%,#16a34a 100%)',stripe:'rgba(0,0,0,0.04)'},
+  {label:'Mørk',bg:'linear-gradient(180deg,#052e16 0%,#14532d 50%,#052e16 100%)',stripe:'rgba(255,255,255,0.03)'},
+  {label:'Blå kunstgræs',bg:'linear-gradient(180deg,#1e3a5f 0%,#1d4ed8 50%,#1e3a5f 100%)',stripe:'rgba(0,0,0,0.06)'},
+  {label:'Sandfarvet',bg:'linear-gradient(180deg,#92400e 0%,#b45309 50%,#92400e 100%)',stripe:'rgba(0,0,0,0.05)'},
+  {label:'Nat',bg:'linear-gradient(180deg,#0c0a1a 0%,#1e1b4b 50%,#0c0a1a 100%)',stripe:'rgba(255,255,255,0.02)'},
+];
+function LineupTab({players}){
+  const [activeDraft,setActiveDraft]=useState(0);
+  const [drafts,setDrafts]=useState([makeDraft(),makeDraft(),makeDraft()]);
+  const [poss,setPoss]=useState('in');
+  const [popup,setPopup]=useState(null);
+  const [pitchIdx,setPitchIdx]=useState(0);
+  const draft=drafts[activeDraft];
+  function updateDraft(u){setDrafts(prev=>prev.map((d,i)=>i===activeDraft?{...d,...u}:d));}
+  const slots=FORMATIONS[draft.formation].slots;
+  const pById={};players.forEach(p=>pById[p.id]=p);
+  const usedIds=Object.values(draft.lineup).filter(Boolean);
+  const startingSet=new Set(usedIds);
+  const subs=players.filter(p=>!startingSet.has(p.id));
+  function openPopup(slotId,e){e.stopPropagation();const r=e.currentTarget.getBoundingClientRect();setPopup({slotId,x:r.left+r.width/2,y:r.top+r.height+5});}
+  function assignPlayer(pid){const next={...draft.lineup};Object.keys(next).forEach(k=>{if(next[k]===pid)delete next[k];});if(pid)next[popup.slotId]=pid;else delete next[popup.slotId];updateDraft({lineup:next});setPopup(null);}
+  useEffect(()=>{const close=()=>setPopup(null);window.addEventListener('click',close);return()=>window.removeEventListener('click',close);},[]);
+  return (
+    <div className="page">
+      <div className="page-title">🏟️ Opstilling</div>
+      <div className="flex gap-2 mb-4">
+        {drafts.map((d,i)=><button key={i} className={`draft-btn${activeDraft===i?' active':''}`} onClick={()=>setActiveDraft(i)}>UDKAST {i+1}<br/><span style={{fontWeight:400,fontSize:'0.65rem'}}>{d.formation}</span></button>)}
+      </div>
+      <div className="lineup-wrapper">
+        <div style={{display:'flex',flexDirection:'column',gap:10,minWidth:170}}>
+          <div className="card">
+            <div className="card-title">Formation</div>
+            {Object.keys(FORMATIONS).map(f=><button key={f} className={`btn ${draft.formation===f?'btn-green':'btn-outline'}`} style={{width:'100%',marginBottom:6,textAlign:'left'}} onClick={()=>updateDraft({formation:f,lineup:{}})}>{f}</button>)}
+          </div>
+          <button className="btn btn-danger" style={{width:'100%'}} onClick={()=>updateDraft({lineup:{}})}>Ryd opstilling</button>
+          <div className="card" style={{fontSize:'0.75rem',color:'#64748b'}}>
+            <div style={{marginBottom:6}}><span style={{color:'#22c55e'}}>●</span> Startende: {usedIds.length}/{slots.length}</div>
+            {POSITIONS.map(pos=>{const cnt=players.filter(p=>startingSet.has(p.id)&&p.position===pos).length;return cnt>0?<div key={pos}><span className={`pos-badge pos-${pos}`}>{pos}</span> {cnt}</div>:null;})}
+          </div>
+        </div>
+        <div style={{display:'flex',flexDirection:'column',gap:10}}>
+          {/* Pitch colour picker */}
+          <div className="card" style={{padding:'8px 12px'}}>
+            <div style={{fontSize:'0.68rem',color:'#64748b',fontWeight:700,textTransform:'uppercase',letterSpacing:'0.5px',marginBottom:7}}>🎨 Banefarve</div>
+            <div className="pitch-color-bar">
+              {PITCH_PRESETS.map((p,i)=>(
+                <div key={i} title={p.label}
+                  className={`pitch-color-swatch${pitchIdx===i?' active':''}`}
+                  style={{background:p.bg}}
+                  onClick={()=>setPitchIdx(i)}
+                />
+              ))}
+              <span style={{fontSize:'0.7rem',color:'#22c55e',fontWeight:600,marginLeft:4}}>{PITCH_PRESETS[pitchIdx].label}</span>
+            </div>
+          </div>
+          <div className="pitch" style={{width:305,height:465,background:PITCH_PRESETS[pitchIdx].bg}}>
+            {/* Mowed-lawn stripes */}
+            <div style={{position:'absolute',inset:0,backgroundImage:`repeating-linear-gradient(0deg,transparent,transparent 42px,${PITCH_PRESETS[pitchIdx].stripe} 42px,${PITCH_PRESETS[pitchIdx].stripe} 84px)`,pointerEvents:'none',zIndex:0}}/>
+            {/* Pitch markings */}
+            <div style={{position:'absolute',width:'100%',height:2,background:'rgba(255,255,255,.22)',top:'50%',transform:'translateY(-50%)',zIndex:1}}/>
+            <div style={{position:'absolute',width:70,height:70,borderRadius:'50%',border:'2px solid rgba(255,255,255,.22)',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:1}}/>
+            <div style={{position:'absolute',width:7,height:7,borderRadius:'50%',background:'rgba(255,255,255,.4)',top:'50%',left:'50%',transform:'translate(-50%,-50%)',zIndex:5}}/>
+            <div style={{position:'absolute',width:115,height:52,border:'2px solid rgba(255,255,255,.22)',borderTop:'none',top:0,left:'50%',transform:'translateX(-50%)',zIndex:1}}/>
+            <div style={{position:'absolute',width:115,height:52,border:'2px solid rgba(255,255,255,.22)',borderBottom:'none',bottom:0,left:'50%',transform:'translateX(-50%)',zIndex:1}}/>
+            <div style={{position:'absolute',width:52,height:15,border:'2px solid rgba(255,255,255,.28)',borderTop:'none',top:0,left:'50%',transform:'translateX(-50%)',zIndex:1}}/>
+            <div style={{position:'absolute',width:52,height:15,border:'2px solid rgba(255,255,255,.28)',borderBottom:'none',bottom:0,left:'50%',transform:'translateX(-50%)',zIndex:1}}/>
+            {slots.map(slot=>{
+              const pid=draft.lineup[slot.id];const player=pid?pById[pid]:null;const notReady=player&&player.status&&player.status!=='Ready';
+              return (
+                <div key={slot.id} className="pitch-player" style={{left:`${slot.x}%`,top:`${slot.y}%`}} onClick={e=>openPopup(slot.id,e)}>
+                  {player
+                    ? <div style={{position:'relative',transition:'transform .15s',transformOrigin:'bottom center'}} className="pitch-jersey-wrap">
+                        <JerseyIcon number={player.number||'?'} color={posColor(slot.pos)} small={false} dim={notReady}/>
+                        {notReady&&<span style={{position:'absolute',top:-3,right:-3,width:10,height:10,borderRadius:'50%',background:'#f87171',border:'1.5px solid #0f172a',display:'block'}}/>}
+                      </div>
+                    : <div style={{width:32,height:38,borderRadius:6,background:'#1e293b88',border:'2px dashed #475569',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'0.5rem',color:'#475569',margin:'0 auto'}}>{slot.pos}</div>
+                  }
+                  <div className="pitch-player-name">{player?(player.name.split(' ').length>1?player.name.split(' ').pop():player.name):''}</div>
+                </div>
+              );
+            })}
+          </div>
+          <div className="card">
+            <div className="flex" style={{background:'#0f172a',borderRadius:8,padding:3,marginBottom:10}}>
+              <button className={`poss-tab${poss==='in'?' active':''}`} onClick={()=>setPoss('in')}>⚡ Med bold</button>
+              <button className={`poss-tab${poss==='out'?' active':''}`} onClick={()=>setPoss('out')}>🛡 Uden bold</button>
+            </div>
+            <textarea placeholder={poss==='in'?'Instruktioner med bold…':'Defensiv instruktioner…'} value={poss==='in'?draft.inPoss:draft.outPoss} onChange={e=>updateDraft(poss==='in'?{inPoss:e.target.value}:{outPoss:e.target.value})} style={{width:'100%',background:'#0f172a',border:'1px solid #334155',color:'#f1f5f9',borderRadius:8,padding:'8px 10px',fontSize:'0.8rem',resize:'vertical',minHeight:75,outline:'none',fontFamily:'inherit'}} />
+          </div>
+        </div>
+        <div>
+          <div className="card-title">Bænk</div>
+          <div className="card" style={{minWidth:130,padding:'10px 12px'}}>
+            {subs.length===0&&<div className="text-muted" style={{padding:'6px 0'}}>Alle tildelt</div>}
+            {subs.slice(0,10).map((p,i)=>(
+              <div key={p.id} className="sub-item">
+                <div style={{width:26,height:26,borderRadius:'50%',background:posColor(p.position),display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontSize:'0.58rem',fontWeight:700,flexShrink:0}}>{p.number||i+1}</div>
+                <div><div style={{fontSize:'0.75rem',fontWeight:600,color:p.status&&p.status!=='Ready'?'#f87171':'#f1f5f9'}}>{p.name.split(' ')[0]}</div><div style={{fontSize:'0.62rem',color:'#64748b'}}>{p.position}</div></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+      {popup&&(
+        <div className="player-popup" style={{top:popup.y,left:Math.min(popup.x,window.innerWidth-165)}} onClick={e=>e.stopPropagation()}>
+          <div style={{fontSize:'0.65rem',color:'#64748b',padding:'3px 10px 7px',borderBottom:'1px solid #334155',marginBottom:4}}>{slots.find(s=>s.id===popup.slotId)?.pos} — vælg spiller</div>
+          {players.filter(p=>!usedIds.includes(p.id)||draft.lineup[popup.slotId]===p.id).map(p=>(
+            <div key={p.id} className="player-popup-item" onClick={()=>assignPlayer(p.id)}>
+              <span style={{width:7,height:7,borderRadius:'50%',background:statusDot(p.status||'Ready'),flexShrink:0}}></span>
+              <span style={{flex:1}}>{p.name}</span><span style={{fontSize:'0.65rem',color:'#64748b'}}>{p.position}</span>
+            </div>
+          ))}
+          {players.length===0&&<div style={{padding:'8px 10px',color:'#475569',fontSize:'0.8rem'}}>Ingen spillere i truppen</div>}
+          {draft.lineup[popup.slotId]&&<><hr className="divider" style={{margin:'4px 0'}}/><div className="player-popup-item" style={{color:'#f87171'}} onClick={()=>assignPlayer(null)}>✕ Fjern</div></>}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── JERSEY ICON ─────────────────────────────────────────────────────────────
+function JerseyIcon({number,color,small,dim}){
+  const c=color||'#22c55e';
+  const w=small?20:32,h=small?24:38;
+  const num=String(number!=null&&number!==''?number:'?');
+  const fs=num.length>2?(small?5:8.5):num.length>1?(small?7:11):(small?9.5:14);
+  const op=dim?0.55:1;
+  return(
+    <svg width={w} height={h} viewBox="0 0 32 38" style={{display:'block',opacity:op,filter:'drop-shadow(0 1px 3px rgba(0,0,0,0.4))'}}>
+      <path d="M11 4 L2 12.5 L9 16 L9 35 L23 35 L23 16 L30 12.5 L21 4 Q18 1 16 2.5 Q14 1 11 4Z" fill={c} stroke="rgba(255,255,255,0.2)" strokeWidth="0.8"/>
+      <path d="M11 4 Q14 1 16 2.5 Q18 1 21 4" fill="none" stroke="rgba(255,255,255,0.55)" strokeWidth="1.3" strokeLinecap="round"/>
+      <path d="M9 16 L9 15 Q8.5 11 9.5 9 L2 12.5Z" fill="rgba(0,0,0,0.15)"/>
+      <path d="M23 16 L23 15 Q23.5 11 22.5 9 L30 12.5Z" fill="rgba(0,0,0,0.15)"/>
+      <rect x="10" y="15" width="12" height="13" rx="1" fill="rgba(255,255,255,0.08)"/>
+      <text x="16" y="25.5" textAnchor="middle" dominantBaseline="middle" fill="white" fontSize={fs} fontWeight="900" fontFamily="'Segoe UI',Arial,sans-serif" paintOrder="stroke" stroke="rgba(0,0,0,0.5)" strokeWidth="1.8" strokeLinejoin="round">{num}</text>
+    </svg>
+  );
+}
+// ─── DRAWING BOARD ────────────────────────────────────────────────────────────
+const PALETTE=['#22c55e','#3b82f6','#eab308','#ef4444','#1f2937','#9ca3af'];
+function EIcon({sub,color,small,num}){
+  const c=color||'#22c55e',sz=small?18:26;
+  switch(sub){
+    case 'filled-square':return <svg width={sz} height={sz} viewBox="0 0 24 24"><rect x="1" y="1" width="22" height="22" fill={c} rx="2"/></svg>;
+    case 'outline-square':return <svg width={sz} height={sz} viewBox="0 0 24 24"><rect x="1.5" y="1.5" width="21" height="21" fill="none" stroke={c} strokeWidth="2.5" rx="2"/></svg>;
+    case 'shape-circle':return <svg width={sz} height={sz} viewBox="0 0 26 26"><circle cx="13" cy="13" r="11" fill="none" stroke={c} strokeWidth="2.5"/></svg>;
+    case 'ball':return <svg width={small?22:28} height={small?22:28} viewBox="0 0 28 28"><circle cx="14" cy="14" r="12.5" fill="white" stroke="#374151" strokeWidth="1.5"/><circle cx="14" cy="14" r="5" fill="none" stroke="#374151" strokeWidth="1.2"/><circle cx="14" cy="5" r="2" fill="#374151" opacity="0.5"/><circle cx="14" cy="23" r="2" fill="#374151" opacity="0.5"/></svg>;
+    case 'small-dot':return <svg width={small?14:18} height={small?14:18} viewBox="0 0 18 18"><circle cx="9" cy="9" r="7.5" fill={c}/></svg>;
+    case 'cone':return <svg width={small?18:22} height={small?18:22} viewBox="0 0 24 24"><polygon points="12,2 22,21 2,21" fill={c}/></svg>;
+    case 'big-goal':return <svg width={small?36:46} height={small?16:20} viewBox="0 0 46 20"><rect x="1" y="1" width="44" height="18" fill="rgba(150,150,150,0.1)" stroke="#374151" strokeWidth="2" rx="1"/></svg>;
+    case 'small-goal':return <svg width={small?24:32} height={small?13:17} viewBox="0 0 32 17"><rect x="1" y="1" width="30" height="15" fill="rgba(150,150,150,0.1)" stroke="#374151" strokeWidth="2" rx="1"/></svg>;
+    case 'hurdle':return <svg width={small?26:34} height={small?18:24} viewBox="0 0 34 24"><line x1="4" y1="24" x2="4" y2="8" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"/><line x1="30" y1="24" x2="30" y2="8" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"/><line x1="1" y1="8" x2="33" y2="8" stroke="#374151" strokeWidth="3" strokeLinecap="round"/></svg>;
+    case 'ladder':return <svg width={small?28:36} height={small?18:24} viewBox="0 0 36 24"><line x1="2" y1="1" x2="2" y2="23" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"/><line x1="34" y1="1" x2="34" y2="23" stroke="#374151" strokeWidth="2.5" strokeLinecap="round"/>{[5,11,17].map(y=><line key={y} x1="2" y1={y} x2="34" y2={y} stroke="#374151" strokeWidth="2" strokeLinecap="round"/>)}</svg>;
+    case 'player-outline':return <svg width={sz} height={sz} viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill="none" stroke={c} strokeWidth="2.5"/></svg>;
+    case 'player-bib':return <svg width={sz} height={sz} viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill="none" stroke={c} strokeWidth="2.5"/><path d="M6 12.5 Q14 6.5 22 12.5" fill="none" stroke={c} strokeWidth="2.5" strokeLinecap="round"/></svg>;
+    case 'player-filled':return <svg width={sz} height={sz} viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill={c}/></svg>;
+    case 'player-x':return <svg width={sz} height={sz} viewBox="0 0 28 28"><circle cx="14" cy="14" r="11.5" fill="none" stroke={c} strokeWidth="2.5"/><line x1="9" y1="9" x2="19" y2="19" stroke={c} strokeWidth="2"/><line x1="19" y1="9" x2="9" y2="19" stroke={c} strokeWidth="2"/></svg>;
+    case 'arr-solid':return <svg width={small?46:58} height={small?12:16} viewBox="0 0 58 16"><line x1="2" y1="8" x2="48" y2="8" stroke={c} strokeWidth="2"/><polygon points="56,8 46,3.5 46,12.5" fill={c}/></svg>;
+    case 'arr-dashed':return <svg width={small?46:58} height={small?12:16} viewBox="0 0 58 16"><line x1="2" y1="8" x2="48" y2="8" stroke={c} strokeWidth="2" strokeDasharray="6,3"/><polygon points="56,8 46,3.5 46,12.5" fill={c}/></svg>;
+    case 'arr-wavy':return <svg width={small?46:58} height={small?16:20} viewBox="0 0 58 20"><path d="M2 10 Q7 3 14 10 Q21 17 28 10 Q35 3 42 10 Q47 17 48 10" fill="none" stroke={c} strokeWidth="2" strokeLinecap="round"/><polygon points="56,10 46,5.5 46,14.5" fill={c}/></svg>;
+    case 'arr-line':return <svg width={small?46:58} height={small?12:16} viewBox="0 0 58 16"><line x1="2" y1="8" x2="56" y2="8" stroke={c} strokeWidth="2" strokeDasharray="6,3"/></svg>;
+    case 'player-jersey':return <JerseyIcon number={num} color={c} small={small}/>;
+    default:return <svg width={sz} height={sz} viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill={c}/></svg>;
+  }
+}
+function DrawingBoard({isHalfPitch,extraPanel}){
+  const boardRef=useRef(null);
+  const [items,setItems]=useState([]);
+  const [lines,setLines]=useState([]);
+  const [zones,setZones]=useState([]);
+  const [showGrid,setShowGrid]=useState(true);
+  const [selId,setSelId]=useState(null);
+  const [activeCat,setActiveCat]=useState('players');
+  const [activeSub,setActiveSub]=useState('player-outline');
+  const [activeNum,setActiveNum]=useState(1);
+  const [customNum,setCustomNum]=useState('');
+  const [catColor,setCatColor]=useState({shapes:'#22c55e',equipment:'#1f2937',players:'#22c55e',numbered:'#22c55e',arrows:'#1f2937'});
+  const [sysMode,setSysMode]=useState('place');
+  const [expanded,setExpanded]=useState({shapes:true,equipment:true,players:true,numbered:true,arrows:true});
+  const dragRef=useRef(null);
+  const [preview,setPreview]=useState(null);
+  const BW=isHalfPitch?510:560,BH=isHalfPitch?390:520;
+  const SECTIONS=[
+    {key:'shapes',label:'Former',hint:'klik + træk',tools:[{id:'filled-square',label:'Fyldt'},{id:'outline-square',label:'Kontur'},{id:'shape-circle',label:'Cirkel'}]},
+    {key:'equipment',label:'Udstyr',hint:'træk',tools:[{id:'ball',label:'Bold'},{id:'small-dot',label:'Punkt'},{id:'cone',label:'Kegle'},{id:'big-goal',label:'Mål stor'},{id:'small-goal',label:'Mål sm.'},{id:'hurdle',label:'Hæk'},{id:'ladder',label:'Stige'}]},
+    {key:'players',label:'Spillere',hint:'træk',tools:[{id:'player-outline',label:'Cirkel'},{id:'player-bib',label:'Vest'},{id:'player-filled',label:'Fyldt'},{id:'player-x',label:'GK'}]},
+    {key:'arrows',label:'Pile + Linjer',hint:'klik + træk',tools:[{id:'arr-solid',label:'Pil'},{id:'arr-dashed',label:'Stiplet'},{id:'arr-wavy',label:'Bølge'},{id:'arr-line',label:'Linje'}]},
+  ];
+  function gc(e){const r=boardRef.current.getBoundingClientRect();return{x:Math.max(0,Math.min(100,((e.clientX-r.left)/r.width)*100)),y:Math.max(0,Math.min(100,((e.clientY-r.top)/r.height)*100))};}
+  const isArrow=activeCat==='arrows',isZone=sysMode==='zone';
+  function handleBoardDown(e){
+    const pos=gc(e);
+    if(isArrow){setPreview({type:'line',x1:pos.x,y1:pos.y,x2:pos.x,y2:pos.y,sub:activeSub,color:catColor.arrows});return;}
+    if(isZone){setPreview({type:'zone',x1:pos.x,y1:pos.y,x2:pos.x,y2:pos.y,color:catColor.shapes});return;}
+    if(sysMode==='place'){const ni={id:Date.now(),sub:activeSub,color:catColor[activeCat]||catColor.players,x:pos.x,y:pos.y};if(activeSub==='player-jersey')ni.num=activeNum;setItems(prev=>[...prev,ni]);setSelId(null);}
+    else{setSelId(null);}
+  }
+  function handleBoardMove(e){
+    const pos=gc(e);
+    if(preview){setPreview(prev=>prev?{...prev,x2:pos.x,y2:pos.y}:null);}
+    if(dragRef.current){const{id,ox,oy}=dragRef.current;setItems(prev=>prev.map(it=>it.id===id?{...it,x:Math.max(1,Math.min(99,pos.x-ox)),y:Math.max(1,Math.min(99,pos.y-oy))}:it));}
+  }
+  function handleBoardUp(){
+    if(preview){const p=preview;if(p.type==='zone'){const x=Math.min(p.x1,p.x2),y=Math.min(p.y1,p.y2),w=Math.abs(p.x2-p.x1),h=Math.abs(p.y2-p.y1);if(w>2&&h>2)setZones(prev=>[...prev,{id:Date.now(),x,y,w,h,color:p.color}]);}else{const dx=p.x2-p.x1,dy=p.y2-p.y1;if(Math.sqrt(dx*dx+dy*dy)>2)setLines(prev=>[...prev,{id:Date.now(),x1:p.x1,y1:p.y1,x2:p.x2,y2:p.y2,sub:p.sub,color:p.color}]);}setPreview(null);}dragRef.current=null;}
+  function handleItemDown(e,item){e.stopPropagation();if(sysMode==='delete'){setItems(prev=>prev.filter(it=>it.id!==item.id));return;}setSelId(item.id);const pos=gc(e);dragRef.current={id:item.id,ox:pos.x-item.x,oy:pos.y-item.y};}
+  function renderLineSVG(l,opacity=1){
+    const col=l.color||'#1f2937',sw=0.85;
+    const dx=l.x2-l.x1,dy=l.y2-l.y1,len=Math.sqrt(dx*dx+dy*dy);
+    const ux=len>0?dx/len:0,uy=len>0?dy/len:0,s=3;
+    const ax=l.x2-ux*s+uy*s*0.5,ay=l.y2-uy*s-ux*s*0.5,bx=l.x2-ux*s-uy*s*0.5,by=l.y2-uy*s+ux*s*0.5;
+    return(
+      <g key={l.id} opacity={opacity}>
+        {l.sub==='arr-wavy'
+          ?<path d={`M${l.x1} ${l.y1} Q${(l.x1+l.x2)/2-dy*0.15} ${(l.y1+l.y2)/2+dx*0.15} ${l.x2} ${l.y2}`} fill="none" stroke={col} strokeWidth={sw} strokeLinecap="round"/>
+          :<line x1={l.x1} y1={l.y1} x2={l.x2} y2={l.y2} stroke={col} strokeWidth={sw} strokeDasharray={(l.sub==='arr-dashed'||l.sub==='arr-line')?'3,2':undefined}/>
+        }
+        {l.sub!=='arr-line'&&len>3&&<polygon points={`${l.x2},${l.y2} ${ax},${ay} ${bx},${by}`} fill={col}/>}
+      </g>
+    );
+  }
+  function PitchSVG(){
+    const st='#94a3b8',sw=0.65,da='2.5,1.8';
+    if(isHalfPitch)return(<g stroke={st} strokeWidth={sw} fill="none"><rect x="5" y="3" width="90" height="94"/><rect x="18" y="3" width="64" height="30"/><rect x="30" y="3" width="40" height="13"/><path d="M23 33 Q50 48 77 33" strokeDasharray={da}/></g>);
+    return(<g stroke={st} strokeWidth={sw} fill="none"><rect x="7" y="3" width="86" height="94"/><line x1="7" y1="50" x2="93" y2="50" strokeDasharray={da}/><ellipse cx="50" cy="50" rx="9" ry="9.7"/><circle cx="50" cy="50" r="0.9" fill={st} stroke="none"/><rect x="22" y="3" width="56" height="19"/><rect x="33" y="3" width="34" height="9"/><rect x="22" y="78" width="56" height="19"/><rect x="33" y="88" width="34" height="9"/></g>);
+  }
+  return(
+    <div style={{display:'flex',gap:16,alignItems:'flex-start',flexWrap:'wrap'}}>
+      <div style={{width:240,background:'white',borderRadius:12,border:'1px solid #e2e8f0',overflow:'hidden',flexShrink:0}}>
+        <div style={{padding:'8px 12px',borderBottom:'1px solid #e2e8f0',display:'flex',gap:5,flexWrap:'wrap',background:'#f8fafc'}}>
+          {[['place','↖ Vælg'],['delete','✕ Slet'],['zone','□ Zone']].map(([m,label])=>(
+            <button key={m} onClick={()=>{setSysMode(m);if(m!=='place')setActiveCat('none');}}
+              style={{padding:'4px 9px',borderRadius:6,border:`1.5px solid ${sysMode===m&&!isArrow&&!isZone?'#22c55e':'#d1d5db'}`,background:sysMode===m&&!isArrow&&!isZone?'#dcfce7':'white',color:sysMode===m&&!isArrow&&!isZone?'#166534':'#374151',cursor:'pointer',fontSize:'0.7rem',fontWeight:600}}>{label}</button>
+          ))}
+        </div>
+        {SECTIONS.map(sec=>(
+          <div key={sec.key} style={{borderBottom:'1px solid #e2e8f0'}}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',cursor:'pointer',background:'#f8fafc',userSelect:'none'}} onClick={()=>setExpanded(p=>({...p,[sec.key]:!p[sec.key]}))}>
+              <span style={{fontSize:'0.77rem',fontWeight:700,color:'#111827'}}>{sec.label} <span style={{fontWeight:400,fontSize:'0.62rem',color:'#9ca3af'}}>({sec.hint})</span></span>
+              <span style={{color:'#9ca3af',fontSize:'0.72rem'}}>{expanded[sec.key]?'▲':'▼'}</span>
+            </div>
+            {expanded[sec.key]&&(
+              <div style={{padding:'8px 12px 10px'}}>
+                <div style={{display:'flex',gap:4,marginBottom:8}}>
+                  {PALETTE.map(col=>{const active=catColor[sec.key]===col&&activeCat===sec.key;return <div key={col} onClick={()=>{setCatColor(p=>({...p,[sec.key]:col}));setActiveCat(sec.key);setSysMode('place');}} style={{width:22,height:22,borderRadius:'50%',background:col,cursor:'pointer',border:`2.5px solid ${active?'white':'transparent'}`,outline:`2px solid ${active?col:'transparent'}`,boxSizing:'border-box',transition:'all .1s'}}/>;} )}
+                </div>
+                <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:3}}>
+                  {sec.tools.map(t=>{const active=activeCat===sec.key&&activeSub===t.id;return(
+                    <div key={t.id} onClick={()=>{setActiveCat(sec.key);setActiveSub(t.id);setSysMode('place');}}
+                      style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:'6px 2px',borderRadius:7,cursor:'pointer',border:`1.5px solid ${active?'#22c55e':'#e5e7eb'}`,background:active?'#f0fdf4':'white',gap:3,minHeight:46,transition:'all .1s'}}>
+                      <EIcon sub={t.id} color={catColor[sec.key]} small={true}/>
+                      <span style={{fontSize:'0.56rem',color:'#6b7280',fontWeight:500,textAlign:'center',lineHeight:1.2}}>{t.label}</span>
+                    </div>
+                  );})}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+        {/* ── NUMBERED JERSEYS SECTION ── */}
+        <div style={{borderBottom:'1px solid #e2e8f0'}}>
+          <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 12px',cursor:'pointer',background:'#f8fafc',userSelect:'none'}} onClick={()=>setExpanded(p=>({...p,numbered:!p.numbered}))}>
+            <span style={{fontSize:'0.77rem',fontWeight:700,color:'#111827'}}>Nummererede trøjer <span style={{fontWeight:400,fontSize:'0.62rem',color:'#9ca3af'}}>(klik tal → placer)</span></span>
+            <span style={{color:'#9ca3af',fontSize:'0.72rem'}}>{expanded.numbered?'▲':'▼'}</span>
+          </div>
+          {expanded.numbered&&(
+            <div style={{padding:'8px 12px 10px'}}>
+              <div style={{display:'flex',gap:4,marginBottom:8}}>
+                {PALETTE.map(col=>{const active=catColor.numbered===col&&activeCat==='numbered';return <div key={col} onClick={()=>{setCatColor(p=>({...p,numbered:col}));}} style={{width:22,height:22,borderRadius:'50%',background:col,cursor:'pointer',border:`2.5px solid ${active?'white':'transparent'}`,outline:`2px solid ${active?col:'transparent'}`,boxSizing:'border-box',transition:'all .1s'}}/>;} )}
+              </div>
+              <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:3,marginBottom:6}}>
+                {[1,2,3,4,5,6,7,8,9,10,11,'?'].map(n=>{
+                  const active=activeCat==='numbered'&&activeSub==='player-jersey'&&activeNum===n;
+                  return(
+                    <div key={n} onClick={()=>{setActiveCat('numbered');setActiveSub('player-jersey');setActiveNum(n);setSysMode('place');}}
+                      style={{display:'flex',alignItems:'center',justifyContent:'center',padding:'4px 2px',borderRadius:7,cursor:'pointer',border:`1.5px solid ${active?'#22c55e':'#e5e7eb'}`,background:active?'#f0fdf4':'white',minHeight:38,transition:'all .1s'}}>
+                      <JerseyIcon number={n} color={active?catColor.numbered:'#9ca3af'} small={true}/>
+                    </div>
+                  );
+                })}
+              </div>
+              <div style={{display:'flex',gap:4,alignItems:'center'}}>
+                <input
+                  type="number" min="1" max="99" placeholder="Eget nr…"
+                  value={customNum}
+                  onChange={e=>setCustomNum(e.target.value)}
+                  style={{flex:1,background:'#f8fafc',border:'1.5px solid #e5e7eb',borderRadius:6,padding:'5px 7px',fontSize:'0.75rem',outline:'none',color:'#374151'}}
+                />
+                <button
+                  disabled={!customNum.trim()}
+                  onClick={()=>{if(customNum.trim()){setActiveCat('numbered');setActiveSub('player-jersey');setActiveNum(parseInt(customNum)||customNum);setSysMode('place');}}}
+                  style={{padding:'5px 9px',borderRadius:6,border:'1.5px solid #22c55e',background:customNum.trim()?'#f0fdf4':'#f9fafb',color:customNum.trim()?'#166534':'#9ca3af',cursor:customNum.trim()?'pointer':'default',fontSize:'0.72rem',fontWeight:700}}>
+                  Vælg
+                </button>
+              </div>
+              {activeCat==='numbered'&&activeSub==='player-jersey'&&(
+                <div style={{marginTop:6,padding:'5px 8px',background:'#f0fdf4',borderRadius:6,fontSize:'0.7rem',color:'#166534',display:'flex',alignItems:'center',gap:6}}>
+                  <JerseyIcon number={activeNum} color={catColor.numbered} small={true}/>
+                  <span>Klikker placerer trøje <b>#{activeNum}</b></span>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+      <div style={{display:'flex',flexDirection:'column',gap:8}}>
+        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+          <div style={{display:'flex',gap:6}}>
+            <button onClick={()=>{setItems([]);setLines([]);setZones([]);setSelId(null);setPreview(null);}} style={{padding:'5px 12px',borderRadius:7,border:'1px solid #d1d5db',background:'white',color:'#374151',cursor:'pointer',fontSize:'0.75rem',fontWeight:600}}>🗑 Ryd</button>
+            <button onClick={()=>setShowGrid(g=>!g)} style={{padding:'5px 12px',borderRadius:7,border:`1px solid ${showGrid?'#22c55e':'#d1d5db'}`,background:showGrid?'#f0fdf4':'white',color:showGrid?'#166534':'#374151',cursor:'pointer',fontSize:'0.75rem',fontWeight:600}}>⊞ Gitter</button>
+          </div>
+        </div>
+        <div ref={boardRef} style={{width:BW,height:BH,background:'#f8fafc',backgroundImage:showGrid?'radial-gradient(circle, #94a3b8 0.85px, transparent 0.85px)':'none',backgroundSize:showGrid?'28px 28px':'none',position:'relative',borderRadius:10,border:'1px solid #e2e8f0',cursor:isArrow||isZone?'crosshair':sysMode==='delete'?'not-allowed':'default',overflow:'hidden',userSelect:'none'}}
+          onMouseDown={handleBoardDown} onMouseMove={handleBoardMove} onMouseUp={handleBoardUp} onMouseLeave={handleBoardUp}>
+          <svg style={{position:'absolute',inset:0,width:'100%',height:'100%',pointerEvents:'none',zIndex:2}} viewBox="0 0 100 100" preserveAspectRatio="none">
+            <PitchSVG/>
+            {zones.map(z=><rect key={z.id} x={z.x} y={z.y} width={z.w} height={z.h} fill={z.color+'28'} stroke={z.color} strokeWidth="0.55" strokeDasharray="2,1.5"/>)}
+            {lines.map(l=>renderLineSVG(l))}
+            {preview&&preview.type==='zone'&&<rect x={Math.min(preview.x1,preview.x2)} y={Math.min(preview.y1,preview.y2)} width={Math.abs(preview.x2-preview.x1)} height={Math.abs(preview.y2-preview.y1)} fill={preview.color+'20'} stroke={preview.color} strokeWidth="0.6" strokeDasharray="2,1.5" opacity="0.8"/>}
+            {preview&&preview.type==='line'&&renderLineSVG({...preview,id:'prev'},0.6)}
+          </svg>
+          {items.map(item=>(
+            <div key={item.id} style={{position:'absolute',left:`${item.x}%`,top:`${item.y}%`,transform:'translate(-50%,-50%)',zIndex:10,cursor:sysMode==='delete'?'not-allowed':'move',filter:selId===item.id?'drop-shadow(0 0 5px rgba(34,197,94,.9))':'drop-shadow(0 1px 2px rgba(0,0,0,.15))',transition:'filter .1s'}}
+              onMouseDown={e=>handleItemDown(e,item)}>
+              <EIcon sub={item.sub} color={item.color} small={false} num={item.num}/>
+            </div>
+          ))}
+        </div>
+        {extraPanel}
+      </div>
+    </div>
+  );
+}
+function SetPiecesTab({players}){
+  const [mode,setMode]=useState('offensive');
+  const [plan,setPlan]=useState('');
+  const ep=<div className="card"><div className="card-title">{mode==='offensive'?'⚡ Offensiv':'🛡 Defensiv'} Plan</div><textarea placeholder="Beskriv rutinen…" value={plan} onChange={e=>setPlan(e.target.value)} style={{width:'100%',background:'#0f172a',border:'1px solid #334155',color:'#f1f5f9',borderRadius:8,padding:'8px 10px',fontSize:'0.76rem',resize:'vertical',minHeight:85,outline:'none',fontFamily:'inherit'}}/></div>;
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>⚽ Sætstykker</div>
+        <div className="flex gap-2">
+          <button className={`btn ${mode==='offensive'?'btn-green':'btn-outline'}`} onClick={()=>setMode('offensive')}>⚡ Offensiv</button>
+          <button className={`btn ${mode==='defensive'?'btn-green':'btn-outline'}`} onClick={()=>setMode('defensive')}>🛡 Defensiv</button>
+        </div>
+      </div>
+      <div style={{color:'#64748b',fontSize:'0.78rem',marginBottom:14}}>Tegn rutiner · Klik et redskab → placer på banen · Klik-træk for at tegne pile</div>
+      <DrawingBoard isHalfPitch={true} extraPanel={ep}/>
+    </div>
+  );
+}
+function DrillsTab(){
+  const [savedDrills,setSavedDrills]=useState([]);
+  const [drillName,setDrillName]=useState('');
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>🏃 Øvelser</div>
+        <div className="flex gap-2 items-center">
+          <input className="form-input" placeholder="Øvelsesnavn…" value={drillName} onChange={e=>setDrillName(e.target.value)} style={{width:170}}/>
+          <button className="btn btn-green" onClick={()=>{if(drillName.trim()){setSavedDrills(prev=>[...prev,{id:Date.now(),name:drillName}]);setDrillName('');}}}>＋ Gem øvelse</button>
+        </div>
+      </div>
+      {savedDrills.length>0&&<div className="flex gap-2 mb-4" style={{flexWrap:'wrap'}}>{savedDrills.map(d=><div key={d.id} style={{background:'#1e293b',border:'1px solid #334155',borderRadius:8,padding:'5px 12px',fontSize:'0.78rem',display:'flex',alignItems:'center',gap:8}}>🏃 {d.name}<button className="btn-icon" style={{fontSize:'0.75rem',color:'#f87171'}} onClick={()=>setSavedDrills(prev=>prev.filter(x=>x.id!==d.id))}>✕</button></div>)}</div>}
+      <div style={{color:'#64748b',fontSize:'0.78rem',marginBottom:14}}>Design træningsøvelser · Træk elementer fraværktøjspanelet · Tegn bevægelses-pile</div>
+      <DrawingBoard isHalfPitch={false}/>
+    </div>
+  );
+}
+
+// ─── MINUTES LOG ──────────────────────────────────────────────────────────────
+function MinutesLogTab({players}){
+  const yr=new Date().getFullYear();
+  const [seasons,setSeasons]=useState([{id:1,name:`${yr}/${String(yr+1).slice(2)} Season`,matches:[]}]);
+  const [actSeason,setActSeason]=useState(0);
+  const [showLog,setShowLog]=useState(false);
+  const [mForm,setMForm]=useState({opponent:'',date:new Date().toISOString().slice(0,10),entries:{}});
+  const season=seasons[actSeason];
+  function getStats(pid){const stats={};LOG_POSITIONS.forEach(p=>stats[p]=0);let apps=0;season.matches.forEach(m=>{const e=m.entries[pid];if(e&&e.played){apps++;if(e.logPos)stats[e.logPos]=(stats[e.logPos]||0)+1;}});return{stats,apps};}
+  function openLogMatch(){const entries={};players.forEach(p=>entries[p.id]={played:false,logPos:''});setMForm({opponent:'',date:new Date().toISOString().slice(0,10),entries});setShowLog(true);}
+  function saveMatch(){if(!mForm.opponent.trim())return;setSeasons(prev=>prev.map((s,i)=>i===actSeason?{...s,matches:[{id:Date.now(),...mForm},...s.matches]}:s));setShowLog(false);}
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>⏱️ Minutlog</div>
+        <div className="flex gap-2">
+          <button className="btn btn-outline btn-sm" onClick={()=>{const name=prompt('Sæsonnavn:');if(name)setSeasons(prev=>[...prev,{id:Date.now(),name,matches:[]}]);}}>＋ Sæson</button>
+          <button className="btn btn-green" onClick={openLogMatch}>+ Log kamp</button>
+        </div>
+      </div>
+      {seasons.length>1&&<div className="flex gap-2 mb-4">{seasons.map((s,i)=><button key={s.id} className={`btn btn-sm ${actSeason===i?'btn-green':'btn-outline'}`} onClick={()=>setActSeason(i)}>{s.name}</button>)}</div>}
+      {season.matches.length===0?<div className="card"><div className="empty-state">Ingen kampe logget endnu — tryk "+ Log kamp"</div></div>:(
+        <div className="card mb-4" style={{overflowX:'auto'}}>
+          <div className="card-title">{season.name}</div>
+          <table className="min-table">
+            <thead><tr><th>Spiller</th><th>Kampe</th>{LOG_POSITIONS.map(p=><th key={p}>{p}</th>)}</tr></thead>
+            <tbody>
+              {players.map(p=>{const {stats,apps}=getStats(p.id);return(
+                <tr key={p.id}>
+                  <td><div className="flex items-center gap-2"><span style={{color:'#475569',width:18,fontSize:'0.7rem'}}>{p.number||'–'}</span><span style={{fontWeight:600}}>{p.name}</span><span className={`pos-badge pos-${p.position}`}>{p.position}</span></div></td>
+                  <td><span style={{color:'#22c55e',fontWeight:700}}>{apps||'–'}</span></td>
+                  {LOG_POSITIONS.map(pos=><td key={pos}><span style={{color:stats[pos]>0?'#e2e8f0':'#334155',fontWeight:stats[pos]>0?600:400}}>{stats[pos]||'–'}</span></td>)}
+                </tr>
+              );})}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {showLog&&(
+        <div className="modal-overlay" onClick={()=>setShowLog(false)}>
+          <div className="modal modal-lg" onClick={e=>e.stopPropagation()}>
+            <div className="modal-title">Log en kamp</div>
+            <div className="form-row mb-4">
+              <div className="form-group"><label>Modstander</label><input className="form-input" style={{width:195}} placeholder="Holdnavn" value={mForm.opponent} onChange={e=>setMForm({...mForm,opponent:e.target.value})}/></div>
+              <div className="form-group"><label>Dato</label><input className="form-input" type="date" value={mForm.date} onChange={e=>setMForm({...mForm,date:e.target.value})}/></div>
+            </div>
+            <div style={{maxHeight:310,overflowY:'auto'}}>
+              <table style={{width:'100%',borderCollapse:'collapse',fontSize:'0.8rem'}}>
+                <thead><tr style={{color:'#64748b',fontSize:'0.65rem'}}><th style={{textAlign:'left',padding:'5px 8px'}}>Spiller</th><th style={{padding:'5px 8px'}}>Spillede</th><th style={{padding:'5px 8px'}}>Position</th></tr></thead>
+                <tbody>{players.map(p=>{const entry=mForm.entries[p.id]||{played:false,logPos:''};return(
+                  <tr key={p.id} style={{borderBottom:'1px solid #334155'}}>
+                    <td style={{padding:'7px 8px',fontWeight:600}}>{p.name} <span className={`pos-badge pos-${p.position}`}>{p.position}</span></td>
+                    <td style={{padding:'7px 8px',textAlign:'center'}}><input type="checkbox" checked={entry.played||false} onChange={e=>setMForm(prev=>({...prev,entries:{...prev.entries,[p.id]:{...entry,played:e.target.checked}}}))} style={{width:16,height:16,cursor:'pointer',accentColor:'#22c55e'}}/></td>
+                    <td style={{padding:'7px 8px',textAlign:'center'}}>{entry.played&&<select className="form-select" style={{fontSize:'0.72rem',padding:'3px 6px'}} value={entry.logPos} onChange={e=>setMForm(prev=>({...prev,entries:{...prev.entries,[p.id]:{...entry,logPos:e.target.value}}}))}><option value=''>– pos –</option>{LOG_POSITIONS.map(pos=><option key={pos}>{pos}</option>)}</select>}</td>
+                  </tr>
+                );})}</tbody>
+              </table>
+            </div>
+            <div className="modal-footer"><button className="btn btn-outline" onClick={()=>setShowLog(false)}>Annuller</button><button className="btn btn-green" onClick={saveMatch}>Gem kamp</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+// ─── SCHEDULE TAB ─────────────────────────────────────────────────────────────
+function ScheduleTab(){
+  const [weekOff,setWeekOff]=useState(0);
+  const [events,setEvents]=useState({});
+  const [adding,setAdding]=useState(null);
+  const [addF,setAddF]=useState({title:'',type:'training',time:''});
+  function getWeek(off){const today=new Date();const dow=today.getDay();const mon=new Date(today);mon.setDate(today.getDate()-(dow===0?6:dow-1)+off*7);return Array.from({length:7},(_,i)=>{const d=new Date(mon);d.setDate(mon.getDate()+i);return d;});}
+  const days=getWeek(weekOff);
+  const todayStr=new Date().toDateString();
+  const DAY_NAMES=['Man','Tir','Ons','Tor','Fre','Lør','Søn'];
+  function dk(d){return d.toISOString().slice(0,10);}
+  function addEvent(dateKey){if(!addF.title.trim())return;setEvents(prev=>({...prev,[dateKey]:[...(prev[dateKey]||[]),{id:Date.now(),...addF}]}));setAddF({title:'',type:'training',time:''});setAdding(null);}
+  function removeEvent(dateKey,id){setEvents(prev=>({...prev,[dateKey]:(prev[dateKey]||[]).filter(e=>e.id!==id)}));}
+  const monthStr=days[0].toLocaleString('da-DK',{month:'long',year:'numeric'});
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>📅 Program — <span style={{color:'#22c55e',textTransform:'capitalize'}}>{monthStr}</span></div>
+        <div className="flex gap-2">
+          <button className="btn btn-outline btn-sm" onClick={()=>setWeekOff(w=>w-1)}>← Uge</button>
+          <button className="btn btn-outline btn-sm" onClick={()=>setWeekOff(0)}>I dag</button>
+          <button className="btn btn-outline btn-sm" onClick={()=>setWeekOff(w=>w+1)}>Uge →</button>
+        </div>
+      </div>
+      <div className="card" style={{padding:0,overflow:'hidden'}}>
+        <div className="sched-week">
+          {days.map((d,i)=>{
+            const dateKey=dk(d);const dayEvs=events[dateKey]||[];const isToday=d.toDateString()===todayStr;
+            return(
+              <div key={i} className="sched-day">
+                <div className="sched-day-hdr">
+                  <div className="sched-day-name">{DAY_NAMES[i]}</div>
+                  <div className={`sched-day-num${isToday?' today':''}`}>{d.getDate()}</div>
+                </div>
+                <div className="sched-day-body">
+                  {dayEvs.map(ev=>(
+                    <div key={ev.id} className={`sched-event ev-${ev.type}`} onClick={()=>removeEvent(dateKey,ev.id)} title="Klik for at fjerne">
+                      {ev.time&&<span style={{opacity:.7,fontSize:'0.65rem'}}>{ev.time} </span>}{ev.title}
+                    </div>
+                  ))}
+                  {adding===dateKey?(
+                    <div style={{padding:'4px 0'}}>
+                      <input className="form-input" style={{width:'100%',fontSize:'0.7rem',padding:'4px 6px',marginBottom:3}} placeholder="Titel…" value={addF.title} onChange={e=>setAddF({...addF,title:e.target.value})} onKeyDown={e=>e.key==='Enter'&&addEvent(dateKey)} autoFocus/>
+                      <div style={{display:'flex',gap:3,marginBottom:3}}>
+                        <input className="form-input" style={{width:52,fontSize:'0.68rem',padding:'3px 5px'}} type="time" value={addF.time} onChange={e=>setAddF({...addF,time:e.target.value})}/>
+                        <select className="form-select" style={{flex:1,fontSize:'0.68rem',padding:'3px 5px'}} value={addF.type} onChange={e=>setAddF({...addF,type:e.target.value})}>
+                          {['training','match','meeting','other'].map(t=><option key={t} value={t}>{t==='training'?'Træning':t==='match'?'Kamp':t==='meeting'?'Møde':'Andet'}</option>)}
+                        </select>
+                      </div>
+                      <div style={{display:'flex',gap:3}}>
+                        <button className="btn btn-green" style={{flex:1,padding:'3px',fontSize:'0.68rem'}} onClick={()=>addEvent(dateKey)}>＋</button>
+                        <button className="btn btn-outline" style={{flex:1,padding:'3px',fontSize:'0.68rem'}} onClick={()=>setAdding(null)}>✕</button>
+                      </div>
+                    </div>
+                  ):<button className="add-ev-btn" onClick={()=>setAdding(dateKey)}>＋</button>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+// ─── MATCHES TAB ──────────────────────────────────────────────────────────────
+function MatchesTab({teamName}){
+  const [matches,setMatches]=useState([
+    {id:1,opponent:'FC Aarhus',goalsFor:3,goalsAgainst:1,date:'2026-03-22',venue:'Home',result:'W',notes:''},
+    {id:2,opponent:'Randers FC',goalsFor:1,goalsAgainst:1,date:'2026-03-15',venue:'Away',result:'D',notes:''},
+    {id:3,opponent:'AGF',goalsFor:0,goalsAgainst:2,date:'2026-03-08',venue:'Home',result:'L',notes:''},
+  ]);
+  const [showForm,setShowForm]=useState(false);
+  const [form,setForm]=useState({opponent:'',goalsFor:'',goalsAgainst:'',date:new Date().toISOString().slice(0,10),venue:'Home',notes:''});
+  function addMatch(){if(!form.opponent.trim())return;const gf=parseInt(form.goalsFor)||0,ga=parseInt(form.goalsAgainst)||0;const result=gf>ga?'W':gf<ga?'L':'D';setMatches(prev=>[{id:Date.now(),...form,goalsFor:gf,goalsAgainst:ga,result},...prev]);setForm({opponent:'',goalsFor:'',goalsAgainst:'',date:new Date().toISOString().slice(0,10),venue:'Home',notes:''});setShowForm(false);}
+  const W=matches.filter(m=>m.result==='W').length,D=matches.filter(m=>m.result==='D').length,L=matches.filter(m=>m.result==='L').length;
+  const gf=matches.reduce((s,m)=>s+m.goalsFor,0),ga=matches.reduce((s,m)=>s+m.goalsAgainst,0);
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>📋 Kampe</div>
+        <button className="btn btn-green" onClick={()=>setShowForm(true)}>＋ Log kamp</button>
+      </div>
+      {matches.length>0&&(
+        <div className="flex gap-2 mb-4" style={{flexWrap:'wrap'}}>
+          {[['W','Vundet','#22c55e'],['-','Kampe',null],['D','Uafgjort','#fbbf24'],['L','Tabt','#f87171']].map(([k,l,c],i)=>(
+            <div key={i} className="stat-card">
+              <div className="stat-num" style={c?{color:c}:{}}>{k==='-'?matches.length:k==='W'?W:k==='D'?D:L}</div>
+              <div className="stat-label">{l}</div>
+            </div>
+          ))}
+          <div className="stat-card"><div className="stat-num">{gf}</div><div className="stat-label">Mål scoret</div></div>
+          <div className="stat-card"><div className="stat-num">{ga}</div><div className="stat-label">Mål imod</div></div>
+        </div>
+      )}
+      {matches.length===0?<div className="empty-state">Ingen kampe endnu — log din første kamp!</div>:(
+        <div className="match-grid">
+          {matches.map(m=>(
+            <div key={m.id} className="match-card">
+              <div className="flex items-center justify-between">
+                <span className={`match-result result-${m.result}`}>{m.result==='W'?'VUNDET':m.result==='D'?'UAFGJORT':'TABT'}</span>
+                <span style={{fontSize:'0.68rem',color:'#475569'}}>{m.venue==='Home'?'Hjemme':m.venue==='Away'?'Ude':'Neutral'}</span>
+                <button className="btn-icon" style={{color:'#f87171',fontSize:'0.72rem'}} onClick={()=>setMatches(prev=>prev.filter(x=>x.id!==m.id))}>✕</button>
+              </div>
+              <div className="flex items-center justify-center gap-3" style={{margin:'8px 0'}}>
+                <span className="match-score-num">{m.goalsFor}</span>
+                <span style={{color:'#475569'}}>–</span>
+                <span className="match-score-num">{m.goalsAgainst}</span>
+              </div>
+              <div className="flex justify-between" style={{fontSize:'0.76rem'}}>
+                <span style={{color:'#e2e8f0',fontWeight:600}}>{teamName||'Dit hold'}</span>
+                <span style={{color:'#94a3b8'}}>{m.opponent}</span>
+              </div>
+              <div style={{fontSize:'0.68rem',color:'#475569',marginTop:4}}>📅 {fmtDate(m.date)}</div>
+              {m.notes&&<div style={{marginTop:5,fontSize:'0.72rem',color:'#64748b',fontStyle:'italic'}}>"{m.notes}"</div>}
+            </div>
+          ))}
+        </div>
+      )}
+      {showForm&&(
+        <div className="modal-overlay" onClick={()=>setShowForm(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-title">Log en kamp</div>
+            <div style={{display:'flex',flexDirection:'column',gap:11}}>
+              <div className="form-group"><label>Modstander</label><input className="form-input" placeholder="Modstander hold" value={form.opponent} onChange={e=>setForm({...form,opponent:e.target.value})}/></div>
+              <div className="flex gap-3">
+                <div className="form-group" style={{flex:1}}><label>Dine mål</label><input className="form-input" type="number" min="0" placeholder="0" value={form.goalsFor} onChange={e=>setForm({...form,goalsFor:e.target.value})}/></div>
+                <div className="form-group" style={{flex:1}}><label>Deres mål</label><input className="form-input" type="number" min="0" placeholder="0" value={form.goalsAgainst} onChange={e=>setForm({...form,goalsAgainst:e.target.value})}/></div>
+              </div>
+              <div className="flex gap-3">
+                <div className="form-group" style={{flex:1}}><label>Dato</label><input className="form-input" type="date" value={form.date} onChange={e=>setForm({...form,date:e.target.value})}/></div>
+                <div className="form-group" style={{flex:1}}><label>Venue</label><select className="form-select" value={form.venue} onChange={e=>setForm({...form,venue:e.target.value})}><option value="Home">Hjemme</option><option value="Away">Ude</option><option value="Neutral">Neutral</option></select></div>
+              </div>
+              <div className="form-group"><label>Noter</label><input className="form-input" placeholder="Kampnoter…" value={form.notes} onChange={e=>setForm({...form,notes:e.target.value})}/></div>
+            </div>
+            <div className="modal-footer"><button className="btn btn-outline" onClick={()=>setShowForm(false)}>Annuller</button><button className="btn btn-green" onClick={addMatch}>Gem kamp</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── COACH MESSAGES TAB ───────────────────────────────────────────────────────
+function CoachMessagesTab({messages,setMessages,users,players,currentUser,setNotifs}){
+  const [selId,setSelId]=useState(null);
+  const [showCompose,setShowCompose]=useState(false);
+  const [cForm,setCForm]=useState({to:'all',subject:'',body:''});
+  const [reply,setReply]=useState('');
+  const myMsgs=messages.filter(m=>m.from===currentUser.id||m.to===currentUser.id||m.to==='all').sort((a,b)=>b.date.localeCompare(a.date));
+  const sel=myMsgs.find(m=>m.id===selId);
+  function getName(uid){const u=users.find(x=>x.id===uid);return u?u.name:uid;}
+  function getToLabel(to){if(to==='all')return'Alle spillere';const u=users.find(x=>x.id===to);return u?u.name:to;}
+  function markRead(msg){if(!msg.readBy.includes(currentUser.id)){setMessages(prev=>prev.map(m=>m.id===msg.id?{...m,readBy:[...m.readBy,currentUser.id]}:m));}}
+  function sendMsg(){
+    if(!cForm.subject.trim()||!cForm.body.trim())return;
+    const newMsg={id:Date.now(),from:currentUser.id,fromName:currentUser.name,to:cForm.to,subject:cForm.subject,body:cForm.body,date:new Date().toISOString().slice(0,10),readBy:[currentUser.id]};
+    setMessages(prev=>[newMsg,...prev]);
+    // Notify recipients
+    const recipIds=cForm.to==='all'?users.filter(u=>u.role==='player').map(u=>u.id):[cForm.to];
+    recipIds.forEach(uid=>{setNotifs(prev=>({...prev,[uid]:[{id:Date.now()+Math.random(),msg:`Coach sendte dig en${cForm.to==='all'?' holdbesked':' besked'}`,type:'message',date:new Date().toISOString().slice(0,10),read:false},...(prev[uid]||[])]}));});
+    setCForm({to:'all',subject:'',body:''});setShowCompose(false);setSelId(newMsg.id);
+  }
+  function sendReply(){
+    if(!reply.trim())return;
+    const newMsg={id:Date.now(),from:currentUser.id,fromName:currentUser.name,to:sel.from===currentUser.id?sel.to:sel.from,subject:'Re: '+sel.subject,body:reply,date:new Date().toISOString().slice(0,10),readBy:[currentUser.id]};
+    setMessages(prev=>[newMsg,...prev]);
+    setReply('');
+  }
+  const playerOptions=users.filter(u=>u.role==='player');
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>💬 Beskeder</div>
+        <button className="btn btn-green" onClick={()=>setShowCompose(true)}>✉️ Skriv besked</button>
+      </div>
+      <div className="msg-layout">
+        <div className="msg-list">
+          <div className="msg-list-hdr"><span className="msg-list-title">Indbakke ({myMsgs.length})</span></div>
+          {myMsgs.length===0&&<div className="nempty">Ingen beskeder endnu</div>}
+          {myMsgs.map(m=>{const unread=!m.readBy.includes(currentUser.id);return(
+            <div key={m.id} className={`msg-item${selId===m.id?' sel':''}${unread?' msg-unread':''}`} onClick={()=>{setSelId(m.id);markRead(m);}}>
+              <div className="msg-from"><span>{m.from===currentUser.id?`→ ${getToLabel(m.to)}`:getName(m.from)}</span>{unread&&<div className="msg-udot"/>}</div>
+              <div className="msg-subj">{m.subject}</div>
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:2}}>
+                <div className="msg-preview">{m.body.slice(0,55)}…</div>
+                <div className="msg-date">{fmtDate(m.date)}</div>
+              </div>
+            </div>
+          );})}
+        </div>
+        <div className="msg-panel">
+          {!sel?<div className="msg-empty"><div style={{fontSize:'2rem'}}>💬</div><div>Vælg en besked</div></div>:(
+            <>
+              <div className="msg-ph">
+                <div className="msg-psubj">{sel.subject}</div>
+                <div className="msg-pmeta">Fra: <b>{getName(sel.from)}</b> · Til: <b>{getToLabel(sel.to)}</b> · {fmtDate(sel.date)}</div>
+              </div>
+              <div className="msg-pbody">{sel.body}</div>
+              <div className="msg-reply">
+                <textarea className="msg-reply-in" placeholder="Skriv svar…" value={reply} onChange={e=>setReply(e.target.value)}/>
+                <button className="btn btn-green" onClick={sendReply} disabled={!reply.trim()}>Send</button>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+      {showCompose&&(
+        <div className="modal-overlay" onClick={()=>setShowCompose(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-title">✉️ Ny besked</div>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <div className="form-group"><label>Til</label>
+                <select className="form-select" value={cForm.to} onChange={e=>setCForm({...cForm,to:e.target.value})}>
+                  <option value="all">📣 Alle spillere</option>
+                  {playerOptions.map(u=><option key={u.id} value={u.id}>{u.name}</option>)}
+                </select>
+              </div>
+              <div className="form-group"><label>Emne</label><input className="form-input" placeholder="Beskedemne…" value={cForm.subject} onChange={e=>setCForm({...cForm,subject:e.target.value})}/></div>
+              <div className="form-group"><label>Besked</label><textarea className="form-input" placeholder="Skriv din besked…" style={{minHeight:110}} value={cForm.body} onChange={e=>setCForm({...cForm,body:e.target.value})}/></div>
+            </div>
+            <div className="modal-footer"><button className="btn btn-outline" onClick={()=>setShowCompose(false)}>Annuller</button><button className="btn btn-green" onClick={sendMsg}>Send besked</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+// ─── COACH STATS TAB ─────────────────────────────────────────────────────────
+function CoachStatsTab({players}){
+  if(players.length===0)return<div className="page"><div className="page-title">📊 Holdstatistik</div><div className="empty-state">Tilføj spillere for at se statistik</div></div>;
+  const totalGoals=players.reduce((s,p)=>s+(p.stats?.goals||0),0);
+  const totalAssists=players.reduce((s,p)=>s+(p.stats?.assists||0),0);
+  const totalMins=players.reduce((s,p)=>s+(p.stats?.minutes||0),0);
+  const topScorer=[...players].sort((a,b)=>(b.stats?.goals||0)-(a.stats?.goals||0))[0];
+  const topAssist=[...players].sort((a,b)=>(b.stats?.assists||0)-(a.stats?.assists||0))[0];
+  const mostMins=[...players].sort((a,b)=>(b.stats?.minutes||0)-(a.stats?.minutes||0))[0];
+  const byPos={GK:players.filter(p=>p.position==='GK'),DEF:players.filter(p=>p.position==='DEF'),MID:players.filter(p=>p.position==='MID'),FWD:players.filter(p=>p.position==='FWD')};
+  const maxGoals=Math.max(...players.map(p=>p.stats?.goals||0),1);
+  const maxAssists=Math.max(...players.map(p=>p.stats?.assists||0),1);
+  const maxMins=Math.max(...players.map(p=>p.stats?.minutes||0),1);
+  const sorted=[...players].sort((a,b)=>(b.stats?.goals||0)-(a.stats?.goals||0));
+  return(
+    <div className="page">
+      <div className="page-title">📊 Holdstatistik</div>
+      <div className="ts-grid">
+        {[['⚽',totalGoals,'Mål i alt','#22c55e'],['🎯',totalAssists,'Assists i alt','#3b82f6'],['⏱',Math.round(totalMins/60),'Timer spillet','#a78bfa'],['👥',players.length,'Spillere','#64748b']].map(([icon,val,lbl,c],i)=>(
+          <div key={i} className="ts-card"><div className="ts-num" style={{color:c}}>{val}</div><div className="ts-lbl">{icon} {lbl}</div></div>
+        ))}
+      </div>
+      <div className="grid-2 mb-4">
+        <div className="card">
+          <div className="card-title">🏆 Top spillere</div>
+          {[['⚽ Topscorer',topScorer,'goals'],['🎯 Flest assists',topAssist,'assists'],['⏱ Flest minutter',mostMins,'minutes']].map(([lbl,p,key])=>p?(
+            <div key={lbl} className="flex items-center justify-between" style={{padding:'8px 0',borderBottom:'1px solid #334155'}}>
+              <div>
+                <div style={{fontSize:'0.65rem',color:'#64748b',marginBottom:2}}>{lbl}</div>
+                <div style={{fontWeight:700,fontSize:'0.88rem'}}>{p.name}</div>
+              </div>
+              <div style={{fontSize:'1.3rem',fontWeight:800,color:'#22c55e'}}>{p.stats?.[key]||0}{key==='minutes'?<span style={{fontSize:'0.7rem',color:'#64748b'}}> min</span>:''}</div>
+            </div>
+          ):null)}
+        </div>
+        <div className="card">
+          <div className="card-title">📍 Trup fordeling</div>
+          {Object.entries(byPos).map(([pos,ps])=>ps.length>0&&(
+            <div key={pos} className="sbar-row">
+              <div className="sbar-lbl"><span className={`pos-badge pos-${pos}`}>{pos}</span></div>
+              <div className="sbar-track"><div className="sbar-fill" style={{width:`${(ps.length/players.length)*100}%`,background:posColor(pos)}}/></div>
+              <div className="sbar-val">{ps.length}</div>
+            </div>
+          ))}
+          <div style={{marginTop:10,fontSize:'0.72rem',color:'#64748b'}}>
+            {['Ready','Injured','Suspended','Not in form'].map(s=>{const cnt=players.filter(p=>p.status===s).length;return cnt>0?<span key={s} style={{marginRight:10,color:statusDot(s)}}>● {s}: {cnt}</span>:null;})}
+          </div>
+        </div>
+      </div>
+      <div className="card">
+        <div className="card-title">🥅 Scorer-tavle</div>
+        {sorted.map((p,i)=>(
+          <div key={p.id} className="flex items-center gap-3" style={{padding:'9px 0',borderBottom:'1px solid #334155'}}>
+            <div style={{width:24,textAlign:'center',fontSize:'0.8rem',color:'#475569',fontWeight:700}}>{i+1}</div>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:600,fontSize:'0.88rem'}}>{p.name}</div>
+              <div style={{display:'flex',gap:12,marginTop:3}}>
+                <div className="sbar-row" style={{marginBottom:0,flex:1}}>
+                  <div className="sbar-lbl" style={{width:50,fontSize:'0.65rem'}}>⚽ Mål</div>
+                  <div className="sbar-track"><div className="sbar-fill" style={{width:`${((p.stats?.goals||0)/maxGoals)*100}%`,background:'#22c55e'}}/></div>
+                  <div className="sbar-val" style={{color:'#22c55e'}}>{p.stats?.goals||0}</div>
+                </div>
+                <div className="sbar-row" style={{marginBottom:0,flex:1}}>
+                  <div className="sbar-lbl" style={{width:50,fontSize:'0.65rem'}}>🎯 Ass.</div>
+                  <div className="sbar-track"><div className="sbar-fill" style={{width:`${((p.stats?.assists||0)/maxAssists)*100}%`,background:'#3b82f6'}}/></div>
+                  <div className="sbar-val" style={{color:'#3b82f6'}}>{p.stats?.assists||0}</div>
+                </div>
+              </div>
+            </div>
+            <span className={`pos-badge pos-${p.position}`}>{p.position}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── PLAYER APP ───────────────────────────────────────────────────────────────
+function PlayerMessages({messages,setMessages,users,currentUser,setNotifs}){
+  const [selId,setSelId]=useState(null);
+  const [reply,setReply]=useState('');
+  const [showCompose,setShowCompose]=useState(false);
+  const [cForm,setCForm]=useState({subject:'',body:''});
+  const myMsgs=messages.filter(m=>m.from===currentUser.id||m.to===currentUser.id||m.to==='all').sort((a,b)=>b.date.localeCompare(a.date));
+  const sel=myMsgs.find(m=>m.id===selId);
+  function getName(uid){const u=users.find(x=>x.id===uid);return u?u.name:uid;}
+  function getToLabel(to){if(to==='all')return'Alle spillere';const u=users.find(x=>x.id===to);return u?u.name:to;}
+  function markRead(msg){if(!msg.readBy.includes(currentUser.id)){setMessages(prev=>prev.map(m=>m.id===msg.id?{...m,readBy:[...m.readBy,currentUser.id]}:m));}}
+  function sendReply(){
+    if(!reply.trim())return;
+    const coachId=users.find(u=>u.role==='coach')?.id||'u0';
+    const newMsg={id:Date.now(),from:currentUser.id,fromName:currentUser.name,to:coachId,subject:'Re: '+sel.subject,body:reply,date:new Date().toISOString().slice(0,10),readBy:[currentUser.id]};
+    setMessages(prev=>[newMsg,...prev]);
+    setNotifs(prev=>({...prev,[coachId]:[{id:Date.now()+1,msg:`${currentUser.name} sendte dig en besked`,type:'message',date:new Date().toISOString().slice(0,10),read:false},...(prev[coachId]||[])]}));
+    setReply('');
+  }
+  function sendNew(){
+    if(!cForm.subject.trim()||!cForm.body.trim())return;
+    const coachId=users.find(u=>u.role==='coach')?.id||'u0';
+    const newMsg={id:Date.now(),from:currentUser.id,fromName:currentUser.name,to:coachId,subject:cForm.subject,body:cForm.body,date:new Date().toISOString().slice(0,10),readBy:[currentUser.id]};
+    setMessages(prev=>[newMsg,...prev]);
+    setNotifs(prev=>({...prev,[coachId]:[{id:Date.now()+1,msg:`${currentUser.name} sendte dig en besked`,type:'message',date:new Date().toISOString().slice(0,10),read:false},...(prev[coachId]||[])]}));
+    setCForm({subject:'',body:''});setShowCompose(false);setSelId(newMsg.id);
+  }
+  return(
+    <div className="page">
+      <div className="flex items-center justify-between mb-4">
+        <div className="page-title" style={{margin:0}}>💬 Beskeder</div>
+        <button className="btn btn-blue" onClick={()=>setShowCompose(true)}>✉️ Skriv til coach</button>
+      </div>
+      <div className="msg-layout">
+        <div className="msg-list">
+          <div className="msg-list-hdr"><span className="msg-list-title">Indbakke ({myMsgs.length})</span></div>
+          {myMsgs.length===0&&<div className="nempty">Ingen beskeder endnu</div>}
+          {myMsgs.map(m=>{const unread=!m.readBy.includes(currentUser.id);return(
+            <div key={m.id} className={`msg-item${selId===m.id?' sel':''}${unread?' msg-unread':''}`} onClick={()=>{setSelId(m.id);markRead(m);}}>
+              <div className="msg-from"><span>{m.from===currentUser.id?`→ Coach`:getName(m.from)}</span>{unread&&<div className="msg-udot"/>}</div>
+              <div className="msg-subj">{m.subject}</div>
+              <div style={{display:'flex',justifyContent:'space-between',marginTop:2}}>
+                <div className="msg-preview">{m.body.slice(0,55)}…</div>
+                <div className="msg-date">{fmtDate(m.date)}</div>
+              </div>
+            </div>
+          );})}
+        </div>
+        <div className="msg-panel">
+          {!sel?<div className="msg-empty"><div style={{fontSize:'2rem'}}>💬</div><div>Vælg en besked</div></div>:(
+            <>
+              <div className="msg-ph">
+                <div className="msg-psubj">{sel.subject}</div>
+                <div className="msg-pmeta">Fra: <b>{getName(sel.from)}</b> · Til: <b>{getToLabel(sel.to)}</b> · {fmtDate(sel.date)}</div>
+              </div>
+              <div className="msg-pbody">{sel.body}</div>
+              {sel.to!=='all'&&<div className="msg-reply">
+                <textarea className="msg-reply-in" placeholder="Skriv svar til coach…" value={reply} onChange={e=>setReply(e.target.value)}/>
+                <button className="btn btn-blue" onClick={sendReply} disabled={!reply.trim()}>Send</button>
+              </div>}
+            </>
+          )}
+        </div>
+      </div>
+      {showCompose&&(
+        <div className="modal-overlay" onClick={()=>setShowCompose(false)}>
+          <div className="modal" onClick={e=>e.stopPropagation()}>
+            <div className="modal-title">✉️ Skriv til coach</div>
+            <div style={{display:'flex',flexDirection:'column',gap:12}}>
+              <div className="form-group"><label>Emne</label><input className="form-input" placeholder="Beskedemne…" value={cForm.subject} onChange={e=>setCForm({...cForm,subject:e.target.value})}/></div>
+              <div className="form-group"><label>Besked</label><textarea className="form-input" style={{minHeight:110}} placeholder="Skriv din besked…" value={cForm.body} onChange={e=>setCForm({...cForm,body:e.target.value})}/></div>
+            </div>
+            <div className="modal-footer"><button className="btn btn-outline" onClick={()=>setShowCompose(false)}>Annuller</button><button className="btn btn-blue" onClick={sendNew}>Send</button></div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function PlayerDashboard({player,messages,currentUser,users}){
+  const s=player?.stats||{};
+  const myMsgs=messages.filter(m=>!m.readBy.includes(currentUser.id)&&(m.to===currentUser.id||m.to==='all'));
+  const ratingColor=parseInt(player?.rating||0)>=80?'#22c55e':parseInt(player?.rating||0)>=70?'#fbbf24':'#f87171';
+  const ratingClass=parseInt(player?.rating||0)>=80?'rating-high':parseInt(player?.rating||0)>=70?'rating-mid':'rating-low';
+  return(
+    <div className="page">
+      <div className="phero">
+        <div className="phero-av">{initials(player?.name||'?')}</div>
+        <div style={{flex:1}}>
+          <div className="phero-name">{player?.name||currentUser.name}</div>
+          <div className="phero-sub">
+            {player&&<span className={`pos-badge pos-${player.position}`}>{player.position}</span>}
+            {player?.number&&<span>#{player.number}</span>}
+            <span style={{color:statusDot(player?.status||'Ready')}}>● {player?.status||'Ready'}</span>
+          </div>
+        </div>
+        {player?.rating&&<div className={`rating-circle ${ratingClass}`} style={{width:72,height:72,borderRadius:'50%',display:'flex',alignItems:'center',justifyContent:'center',fontSize:'1.5rem',fontWeight:900,background:ratingColor+'22',border:`3px solid ${ratingColor}`,color:ratingColor}}>{player.rating}</div>}
+      </div>
+      <div className="qs-grid">
+        {[['⚽',s.goals||0,'Mål','#22c55e'],['🎯',s.assists||0,'Assists','#3b82f6'],['📋',s.matches||0,'Kampe','#f87171'],['⏱',s.minutes||0,'Min.','#a78bfa'],['🟨',s.yellow||0,'Gule kort','#fbbf24'],['🧤',s.clean||0,'Clean sheets','#06b6d4']].map(([icon,val,lbl,c],i)=>(
+          <div key={i} className="qs-card"><div className="qs-num" style={{color:c}}>{val}</div><div className="qs-lbl">{icon} {lbl}</div></div>
+        ))}
+      </div>
+      {myMsgs.length>0&&(
+        <div className="card mb-4" style={{borderLeft:'3px solid #22c55e'}}>
+          <div className="card-title">📬 Ulæste beskeder ({myMsgs.length})</div>
+          {myMsgs.slice(0,3).map(m=>(
+            <div key={m.id} className="flex items-center justify-between" style={{padding:'8px 0',borderBottom:'1px solid #334155',fontSize:'0.82rem'}}>
+              <div><span style={{fontWeight:700}}>{m.subject}</span><span style={{color:'#64748b',marginLeft:8}}>fra {users.find(u=>u.id===m.from)?.name||'?'}</span></div>
+              <span style={{fontSize:'0.68rem',color:'#475569'}}>{fmtDate(m.date)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+      <div className="grid-2">
+        <div className="card">
+          <div className="card-title">📈 Sæson fremgang</div>
+          {[['⚽ Mål',s.goals||0,20,'#22c55e'],['🎯 Assists',s.assists||0,15,'#3b82f6'],['📋 Kampe',s.matches||0,30,'#f87171'],['⏱ Timer',Math.round((s.minutes||0)/90),30,'#a78bfa']].map(([lbl,val,max,c])=>(
+            <div key={lbl} className="sbar-row">
+              <div className="sbar-lbl">{lbl}</div>
+              <div className="sbar-track"><div className="sbar-fill" style={{width:`${Math.min((val/max)*100,100)}%`,background:c}}/></div>
+              <div className="sbar-val" style={{color:c}}>{val}</div>
+            </div>
+          ))}
+        </div>
+        <div className="card">
+          <div className="card-title">📊 Disciplin</div>
+          {[['🟨 Gule kort',s.yellow||0,10,'#fbbf24'],['🟥 Røde kort',s.red||0,3,'#f87171'],['🧤 Clean sheets',s.clean||0,15,'#06b6d4']].map(([lbl,val,max,c])=>(
+            <div key={lbl} className="sbar-row">
+              <div className="sbar-lbl">{lbl}</div>
+              <div className="sbar-track"><div className="sbar-fill" style={{width:`${Math.min((val/max)*100,100)}%`,background:c}}/></div>
+              <div className="sbar-val" style={{color:c}}>{val}</div>
+            </div>
+          ))}
+          {player?.status&&player.status!=='Ready'&&(
+            <div style={{marginTop:12,padding:'8px 12px',background:'#f871711a',border:'1px solid #f87171',borderRadius:8,fontSize:'0.78rem',color:'#f87171'}}>
+              ⚠️ Status: <b>{player.status}</b> — kontakt coach for opdatering
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PlayerApp({currentUser,players,messages,setMessages,users,notifs,setNotifs,onLogout}){
+  const [tab,setTab]=useState('dashboard');
+  const player=players.find(p=>p.id===currentUser.playerId);
+  const myNotifs=notifs[currentUser.id]||[];
+  const unread=myNotifs.filter(n=>!n.read).length;
+  const unreadMsgs=messages.filter(m=>!m.readBy.includes(currentUser.id)&&(m.to===currentUser.id||m.to==='all')).length;
+  const TABS=[['dashboard','🏠 Dashboard'],['messages','💬 Beskeder'+(unreadMsgs>0?` (${unreadMsgs})`:'')],['schedule','📅 Program'],['lineup','🏟️ Opstilling']];
+  return(
+    <div>
+      <nav className="nav">
+        <div className="nav-logo">⚽ TeamManager</div>
+        <div className="nav-tabs">{TABS.map(([key,label])=><div key={key} className={`nav-tab${tab===key?' active':''}`} onClick={()=>setTab(key)}>{label}</div>)}</div>
+        <div className="nav-right">
+          <NotifBell notifs={notifs} setNotifs={setNotifs} uid={currentUser.id}/>
+          <div className="nav-user">
+            <div className="nav-avatar av-player">{initials(currentUser.name)}</div>
+            <div className="nav-uname">{currentUser.name}</div>
+          </div>
+          <button className="logout-btn" onClick={onLogout}>Log ud</button>
+        </div>
+      </nav>
+      {tab==='dashboard'&&<PlayerDashboard player={player} messages={messages} currentUser={currentUser} users={users}/>}
+      {tab==='messages'&&<PlayerMessages messages={messages} setMessages={setMessages} users={users} currentUser={currentUser} setNotifs={setNotifs}/>}
+      {tab==='schedule'&&<ScheduleTab/>}
+      {tab==='lineup'&&<LineupTab players={players}/>}
+    </div>
+  );
+}
+
+// ─── COACH APP ────────────────────────────────────────────────────────────────
+function CoachApp({currentUser,users,setUsers,players,setPlayers,messages,setMessages,notifs,setNotifs,onLogout}){
+  const [tab,setTab]=useState('roster');
+  const [teamName,setTeamName]=useState('Mit Hold');
+  const [editingName,setEditingName]=useState(false);
+  const unreadMsgs=messages.filter(m=>!m.readBy.includes(currentUser.id)&&(m.to===currentUser.id||m.to==='all')).length;
+  const TABS=[
+    ['roster','👥 Trup'],['lineup','🏟️ Opstilling'],['setpieces','⚽ Sætstykker'],
+    ['drills','🏃 Øvelser'],['minutes','⏱ Minutlog'],['schedule','📅 Program'],
+    ['matches','📋 Kampe'],['messages','💬 Beskeder'+(unreadMsgs>0?` (${unreadMsgs})`:'')],
+    ['stats','📊 Stats'],
+  ];
+  return(
+    <div>
+      <nav className="nav">
+        <div className="nav-logo">
+          ⚽ {editingName
+            ?<input style={{background:'none',border:'none',color:'#22c55e',fontWeight:800,fontSize:'1rem',outline:'none',width:130}} value={teamName} onChange={e=>setTeamName(e.target.value)} onBlur={()=>setEditingName(false)} autoFocus/>
+            :<span style={{cursor:'pointer'}} title="Klik for at omdøbe" onClick={()=>setEditingName(true)}>{teamName}</span>
+          }
+        </div>
+        <div className="nav-tabs">{TABS.map(([key,label])=><div key={key} className={`nav-tab${tab===key?' active':''}`} onClick={()=>setTab(key)}>{label}</div>)}</div>
+        <div className="nav-right">
+          <NotifBell notifs={notifs} setNotifs={setNotifs} uid={currentUser.id}/>
+          <div className="nav-user">
+            <div className="nav-avatar av-coach">{initials(currentUser.name)}</div>
+            <div className="nav-uname">{currentUser.name}</div>
+          </div>
+          <button className="logout-btn" onClick={onLogout}>Log ud</button>
+        </div>
+      </nav>
+      {tab==='roster'    &&<RosterTab players={players} setPlayers={setPlayers}/>}
+      {tab==='lineup'    &&<LineupTab players={players}/>}
+      {tab==='setpieces' &&<SetPiecesTab players={players}/>}
+      {tab==='drills'    &&<DrillsTab/>}
+      {tab==='minutes'   &&<MinutesLogTab players={players}/>}
+      {tab==='schedule'  &&<ScheduleTab/>}
+      {tab==='matches'   &&<MatchesTab teamName={teamName}/>}
+      {tab==='messages'  &&<CoachMessagesTab messages={messages} setMessages={setMessages} users={users} players={players} currentUser={currentUser} setNotifs={setNotifs}/>}
+      {tab==='stats'     &&<CoachStatsTab players={players}/>}
+    </div>
+  );
+}
+
+// ─── ROOT APP ─────────────────────────────────────────────────────────────────
+function App(){
+  const [view,setView]=useState('landing'); // landing | coach-login | player-login | register
+  const [currentUser,setCurrentUser]=useState(null);
+  const [users,setUsers]=useState(INIT_USERS);
+  const [players,setPlayers]=useState(INIT_PLAYERS);
+  const [messages,setMessages]=useState(INIT_MESSAGES);
+  const [notifs,setNotifs]=useState(INIT_NOTIFS);
+  function handleLogin(u){setCurrentUser(u);setView('app');}
+  function handleLogout(){setCurrentUser(null);setView('landing');}
+  if(!currentUser){
+    return(
+      <>
+        <LandingPage onCoach={()=>setView('coach-login')} onPlayer={()=>setView('player-login')} onRegister={()=>setView('register')}/>
+        {view==='coach-login'&&<LoginModal role="coach" users={users} onLogin={handleLogin} onClose={()=>setView('landing')} onSwitch={()=>setView('register')}/>}
+        {view==='player-login'&&<LoginModal role="player" users={users} onLogin={handleLogin} onClose={()=>setView('landing')} onSwitch={()=>setView('register')}/>}
+        {view==='register'&&<RegisterModal users={users} setUsers={setUsers} players={players} setPlayers={setPlayers} onClose={()=>setView('landing')} onDone={handleLogin}/>}
+      </>
+    );
+  }
+  if(currentUser.role==='coach'){
+    return <CoachApp currentUser={currentUser} users={users} setUsers={setUsers} players={players} setPlayers={setPlayers} messages={messages} setMessages={setMessages} notifs={notifs} setNotifs={setNotifs} onLogout={handleLogout}/>;
+  }
+  return <PlayerApp currentUser={currentUser} players={players} messages={messages} setMessages={setMessages} users={users} notifs={notifs} setNotifs={setNotifs} onLogout={handleLogout}/>;
+}
+ReactDOM.render(<App/>, document.getElementById('root'));
+</script>
+</body>
+</html>
