@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import JerseyIcon from '../JerseyIcon';
+import JerseyIcon from './JerseyIcon';
 import { FORMATIONS, PITCH_PRESETS, POSITIONS } from '../../constants';
 import { makeDraft, posColor, statusDot } from '../../utils';
 

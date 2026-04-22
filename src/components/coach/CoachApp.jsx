@@ -35,7 +35,7 @@ const CoachApp = ({
   const [editNameValue, setEditNameValue] = useState(teamName);
   const [seasons] = useLocalStorage('seasons', []);
   const [savedDrills, setSavedDrills] = useLocalStorage('savedDrills', []);
-  const [setPiecesBoard, setPiecesBoard] = useLocalStorage('setPiecesBoard', { items: [], lines: [], zones: [] });
+  const [setPiecesBoard, setSetPiecesBoard] = useLocalStorage('setPiecesBoard', { items: [], lines: [], zones: [] });
   const [drillsBoard, setDrillsBoard] = useLocalStorage('drillsBoard', { items: [], lines: [], zones: [] });
 
   const handleTeamNameSave = () => {
