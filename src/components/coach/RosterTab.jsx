@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { POSITIONS, STATUSES } from '../../constants';
 import { posColor, statusDot } from '../../utils';
 
-export const RosterTab = ({ players, setPlayers }) => {
+export default function RosterTab({ players, setPlayers }) {
   const [form, setForm] = useState({
     name: '',
     number: '',
@@ -296,4 +296,4 @@ export const RosterTab = ({ players, setPlayers }) => {
       </div>
     </div>
   );
-};
+}

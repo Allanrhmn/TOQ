@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { LOG_POSITIONS } from '../../constants';
 
-export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
+export default function MinutesLogTab({ players, seasons, setSeasons }) {
   const [actSeason, setActSeason] = useState(0);
   const [showLog, setShowLog] = useState(false);
   const [showSeasonModal, setShowSeasonModal] = useState(false);
@@ -15,7 +15,7 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
   const season = seasons[actSeason];
 
   const getStats = (pid) => {
-    const stats = {};
+    const stats = {}
     LOG_POSITIONS.forEach((p) => (stats[p] = 0));
     let apps = 0;
     season.matches.forEach((m) => {
@@ -25,11 +25,11 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
         if (e.logPos) stats[e.logPos] = (stats[e.logPos] || 0) + 1;
       }
     });
-    return { stats, apps };
-  };
+    return { stats, apps }
+  }
 
   const openLogMatch = () => {
-    const entries = {};
+    const entries = {}
     players.forEach((p) => (entries[p.id] = { played: false, logPos: '' }));
     setMForm({
       opponent: '',
@@ -37,7 +37,7 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
       entries,
     });
     setShowLog(true);
-  };
+  }
 
   const saveMatch = () => {
     if (!mForm.opponent.trim()) return;
@@ -52,7 +52,7 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
       )
     );
     setShowLog(false);
-  };
+  }
 
   const addSeason = () => {
     if (!newSeasonName.trim()) return;
@@ -62,7 +62,7 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
     ]);
     setNewSeasonName('');
     setShowSeasonModal(false);
-  };
+  }
 
   return (
     <div className="page">
@@ -218,7 +218,7 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
                     const entry = mForm.entries[p.id] || {
                       played: false,
                       logPos: '',
-                    };
+                    }
                     return (
                       <tr key={p.id} style={{ borderBottom: '1px solid #334155' }}>
                         <td style={{ padding: '7px 8px', fontWeight: 600 }}>
@@ -334,4 +334,4 @@ export const MinutesLogTab = ({ players, seasons, setSeasons }) => {
       )}
     </div>
   );
-};
+}

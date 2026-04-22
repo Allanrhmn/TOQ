@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { fmtDate } from '../../utils';
 
-export const MatchesTab = ({ teamName, matches, setMatches }) => {
+export default function MatchesTab({ teamName, matches, setMatches }) {
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({
     opponent: '',
@@ -36,7 +36,7 @@ export const MatchesTab = ({ teamName, matches, setMatches }) => {
       notes: '',
     });
     setShowForm(false);
-  };
+  }
 
   const W = matches.filter((m) => m.result === 'W').length;
   const D = matches.filter((m) => m.result === 'D').length;
@@ -215,4 +215,4 @@ export const MatchesTab = ({ teamName, matches, setMatches }) => {
       )}
     </div>
   );
-};
+}

@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { posColor, statusDot } from '../../utils';
 
-export const StatsTab = ({ players }) => {
+export default function StatsTab({ players }) {
   const topScorer = useMemo(() => {
     if (!players || players.length === 0) return null;
     return players.reduce((max, p) => (p.stats?.goals || 0) > (max.stats?.goals || 0) ? p : max);
@@ -18,7 +18,7 @@ export const StatsTab = ({ players }) => {
   }, [players]);
 
   const byPos = useMemo(() => {
-    const dist = {};
+    const dist = {}
     (players || []).forEach((p) => {
       dist[p.position] = (dist[p.position] || 0) + 1;
     });
@@ -133,4 +133,4 @@ export const StatsTab = ({ players }) => {
       </div>
     </div>
   );
-};
+}

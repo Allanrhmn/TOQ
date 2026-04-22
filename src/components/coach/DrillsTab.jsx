@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import DrawingBoard from '../shared/DrawingBoard/DrawingBoard';
 
-export const DrillsTab = ({ savedDrills, setSavedDrills }) => {
+export default function DrillsTab({ savedDrills, setSavedDrills }) {
   const [drillName, setDrillName] = useState('');
 
   const saveDrill = () => {
@@ -18,11 +18,11 @@ export const DrillsTab = ({ savedDrills, setSavedDrills }) => {
       },
     ]);
     setDrillName('');
-  };
+  }
 
   const deleteDrill = (id) => {
     setSavedDrills((prev) => prev.filter((d) => d.id !== id));
-  };
+  }
 
   return (
     <div className="page">
@@ -94,4 +94,4 @@ export const DrillsTab = ({ savedDrills, setSavedDrills }) => {
       </div>
     </div>
   );
-};
+}
