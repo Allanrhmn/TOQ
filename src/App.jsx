@@ -1,18 +1,47 @@
 import { useState } from 'react';
 import { INIT_USERS, INIT_PLAYERS, INIT_MESSAGES, INIT_NOTIFS } from './constants';
 import { useLocalStorage } from './hooks/useLocalStorage';
+import LandingPage from './components/LandingPage';
+import LoginModal from './components/LoginModal';
+import RegisterModal from './components/RegisterModal';
+import CoachApp from './components/coach/CoachApp';
+import PlayerApp from './components/player/PlayerApp';
 
 const App = () => {
-  const [users, setUsers] = useLocalStorage('users', INIT_USERS);
-  const [players, setPlayers] = useLocalStorage('players', INIT_PLAYERS);
-  const [messages, setMessages] = useLocalStorage('messages', INIT_MESSAGES);
-  const [notifs, setNotifs] = useLocalStorage('notifs', INIT_NOTIFS);
-  const [matches, setMatches] = useLocalStorage('matches', []);
-  const [events, setEvents] = useLocalStorage('events', []);
-  const [drafts, setDrafts] = useLocalStorage('drafts', {});
+  const [users, setUsers] = useLocalStorage('tqm_users', INIT_USERS);
+  const [players, setPlayers] = useLocalStorage('tqm_players', INIT_PLAYERS);
+  const [messages, setMessages] = useLocalStorage('tqm_messages', INIT_MESSAGES);
+  const [notifs, setNotifs] = useLocalStorage('tqm_notifs', INIT_NOTIFS);
+  const [matches, setMatches] = useLocalStorage('tqm_matches', []);
+  const [events, setEvents] = useLocalStorage('tqm_schedule', {});
+  const [drafts, setDrafts] = useLocalStorage('tqm_lineupDrafts', {});
 
   const [view, setView] = useState('landing');
   const [currentUser, setCurrentUser] = useState(null);
+  const [loginRole, setLoginRole] = useState(null);
+
+  const handleCoachLogin = () => {
+    setLoginRole('coach');
+    setView('login');
+  };
+
+  const handlePlayerLogin = () => {
+    setLoginRole('player');
+    setView('login');
+  };
+
+  const handleLogin = (user) => {
+    setCurrentUser(user);
+    setView('app');
+  };
+
+  const handleRegister = () => {
+    setView('register');
+  };
+
+  const handleRegisterDone = () => {
+    setView('landing');
+  };
 
   const handleLogout = () => {
     setCurrentUser(null);
@@ -20,43 +49,74 @@ const App = () => {
   };
 
   return (
-    <div>
+    <>
       {view === 'landing' && (
-        <div>
-          <p>Landing Page</p>
-          <button onClick={() => setView('login')}>Login</button>
-          <button onClick={() => setView('register')}>Register</button>
-        </div>
+        <LandingPage onCoach={handleCoachLogin} onPlayer={handlePlayerLogin} onRegister={handleRegister} />
       )}
 
       {view === 'login' && (
-        <div>
-          <p>Login Modal</p>
-          <button onClick={() => setView('landing')}>Cancel</button>
+        <div className="auth-overlay">
+          <LoginModal
+            role={loginRole}
+            users={users}
+            onLogin={handleLogin}
+            onClose={() => setView('landing')}
+            onSwitch={() => setLoginRole(loginRole === 'coach' ? 'player' : 'coach')}
+          />
         </div>
       )}
 
       {view === 'register' && (
-        <div>
-          <p>Register Modal</p>
-          <button onClick={() => setView('landing')}>Cancel</button>
+        <div className="auth-overlay">
+          <RegisterModal
+            users={users}
+            setUsers={setUsers}
+            players={players}
+            setPlayers={setPlayers}
+            onClose={() => setView('landing')}
+            onDone={handleRegisterDone}
+          />
         </div>
       )}
 
-      {currentUser && currentUser.role === 'coach' && (
-        <div>
-          <p>Coach App for {currentUser.name}</p>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+      {view === 'app' && currentUser && currentUser.role === 'coach' && (
+        <CoachApp
+          currentUser={currentUser}
+          users={users}
+          setUsers={setUsers}
+          players={players}
+          setPlayers={setPlayers}
+          messages={messages}
+          setMessages={setMessages}
+          notifs={notifs}
+          setNotifs={setNotifs}
+          matches={matches}
+          setMatches={setMatches}
+          events={events}
+          setEvents={setEvents}
+          drafts={drafts}
+          setDrafts={setDrafts}
+          onLogout={handleLogout}
+        />
       )}
 
-      {currentUser && currentUser.role === 'player' && (
-        <div>
-          <p>Player App for {currentUser.name}</p>
-          <button onClick={handleLogout}>Logout</button>
-        </div>
+      {view === 'app' && currentUser && currentUser.role === 'player' && (
+        <PlayerApp
+          currentUser={currentUser}
+          players={players}
+          messages={messages}
+          setMessages={setMessages}
+          users={users}
+          notifs={notifs}
+          setNotifs={setNotifs}
+          events={events}
+          setEvents={setEvents}
+          drafts={drafts}
+          setDrafts={setDrafts}
+          onLogout={handleLogout}
+        />
       )}
-    </div>
+    </>
   );
 };
 
