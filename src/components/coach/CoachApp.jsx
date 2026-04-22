@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { useLocalStorage } from '../../hooks/useLocalStorage';
 import NotifBell from '../NotifBell';
-import { RosterTab } from './RosterTab';
-import { SetPiecesTab } from './SetPiecesTab';
-import { DrillsTab } from './DrillsTab';
-import { StatsTab } from './StatsTab';
-import { MatchesTab } from './MatchesTab';
-import { MinutesLogTab } from './MinutesLogTab';
-import { ScheduleTab } from '../shared/ScheduleTab';
-import { LineupTab } from '../shared/LineupTab';
-import { MessagesPanel } from '../shared/MessagesPanel';
+import RosterTab from './RosterTab';
+import SetPiecesTab from './SetPiecesTab';
+import DrillsTab from './DrillsTab';
+import StatsTab from './StatsTab';
+import MatchesTab from './MatchesTab';
+import MinutesLogTab from './MinutesLogTab';
+import ScheduleTab from '../shared/ScheduleTab';
+import LineupTab from '../shared/LineupTab';
+import MessagesPanel from '../shared/MessagesPanel';
 
 const CoachApp = ({
   currentUser,

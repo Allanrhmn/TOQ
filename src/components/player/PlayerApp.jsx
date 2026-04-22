@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import NotifBell from '../NotifBell';
-import { PlayerDashboard } from './PlayerDashboard';
-import { ScheduleTab } from '../shared/ScheduleTab';
-import { LineupTab } from '../shared/LineupTab';
-import { MessagesPanel } from '../shared/MessagesPanel';
+import PlayerDashboard from './PlayerDashboard';
+import ScheduleTab from '../shared/ScheduleTab';
+import LineupTab from '../shared/LineupTab';
+import MessagesPanel from '../shared/MessagesPanel';
 
 const PlayerApp = ({
   currentUser,
