@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { initials, statusDot, fmtDate } from '../../utils';
 
-export const PlayerDashboard = ({ player, messages, currentUser, users }) => {
+export default function PlayerDashboard({ player, messages, currentUser, users }) {
   const avatar = player.avatar || initials(player.name);
   const rating = player.rating || '-';
-  const stats = player.stats || { matches: 0, goals: 0, assists: 0, yellow: 0, red: 0, minutes: 0, clean: 0 };
+  const stats = player.stats || { matches: 0, goals: 0, assists: 0, yellow: 0, red: 0, minutes: 0, clean: 0 }
 
   const unreadMsgs = useMemo(() => {
     return messages.filter((m) => m.to === currentUser.id && !m.readBy.includes(currentUser.id) && m.from !== currentUser.id);
@@ -240,4 +240,4 @@ export const PlayerDashboard = ({ player, messages, currentUser, users }) => {
       </div>
     </div>
   );
-};
+}

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { getName, getToLabel } from '../../utils';
 
-export const MessagesPanel = ({ role, messages, setMessages, users, players, currentUser, setNotifs }) => {
+export default function MessagesPanel({ role, messages, setMessages, users, players, currentUser, setNotifs }) {
   const [selId, setSelId] = useState(null);
   const [showCompose, setShowCompose] = useState(false);
   const [reply, setReply] = useState(false);
@@ -22,13 +22,13 @@ export const MessagesPanel = ({ role, messages, setMessages, users, players, cur
       body: cForm.body,
       date: new Date().toISOString().split('T')[0],
       readBy: [currentUser.id],
-    };
+    }
 
     setMessages((prev) => [...prev, newMsg]);
     setCForm({ to: role === 'coach' ? 'all' : coach.id, subject: '', body: '' });
     setShowCompose(false);
     setReply(false);
-  };
+  }
 
   const sendReply = () => {
     if (!cForm.body.trim()) return;
@@ -47,18 +47,18 @@ export const MessagesPanel = ({ role, messages, setMessages, users, players, cur
       body: cForm.body,
       date: new Date().toISOString().split('T')[0],
       readBy: [currentUser.id],
-    };
+    }
 
     setMessages((prev) => [...prev, newMsg]);
     setCForm({ to: 'all', subject: '', body: '' });
     setReply(false);
-  };
+  }
 
   const handleCompose = () => {
     setCForm({ to: role === 'coach' ? 'all' : coach.id, subject: '', body: '' });
     setShowCompose(true);
     setReply(false);
-  };
+  }
 
   const handleReply = () => {
     if (selected) {
@@ -66,7 +66,7 @@ export const MessagesPanel = ({ role, messages, setMessages, users, players, cur
       setReply(true);
       setShowCompose(false);
     }
-  };
+  }
 
   const markAsRead = (msgId) => {
     setMessages((prev) =>
@@ -76,7 +76,7 @@ export const MessagesPanel = ({ role, messages, setMessages, users, players, cur
           : m
       )
     );
-  };
+  }
 
   return (
     <div className="page">
@@ -268,4 +268,4 @@ export const MessagesPanel = ({ role, messages, setMessages, users, players, cur
       )}
     </div>
   );
-};
+}
