@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import JerseyIcon from './JerseyIcon';
 import { FORMATIONS, PITCH_PRESETS, POSITIONS } from '../../constants';
 import { makeDraft, posColor, statusDot } from '../../utils';
@@ -11,6 +11,7 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
   const [pitchIdx, setPitchIdx] = useState(0);
   const [pitchScale, setPitchScale] = useState(1);
   const [isResizing, setIsResizing] = useState(false);
+  const lastTouchXRef = useRef(0);
 
   useEffect(() => {
     if (drafts) setLocalDrafts(drafts);
@@ -69,24 +70,30 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
       setIsResizing(false);
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    window.addEventListener('mouseup', handleMouseUp);
-    window.addEventListener('touchmove', (e) => {
-      if (isResizing && e.touches.length === 1) {
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 1) {
         const touch = e.touches[0];
-        const prevTouch = e.touches[0];
-        const deltaX = touch.clientX - prevTouch.clientX;
+        const deltaX = touch.clientX - lastTouchXRef.current;
+        lastTouchXRef.current = touch.clientX;
         const newScale = Math.min(1.5, Math.max(0.6, pitchScale + deltaX * 0.005));
         setPitchScale(newScale);
       }
-    });
-    window.addEventListener('touchend', handleMouseUp);
+    };
+
+    const handleTouchEnd = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
-      window.removeEventListener('touchmove', handleMouseMove);
-      window.removeEventListener('touchend', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
     };
   }, [isResizing, pitchScale]);
 
@@ -460,9 +467,15 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                   borderRadius: '0 0 8px 0',
                   opacity: isResizing ? 1 : 0.6,
                   transition: 'opacity 120ms ease',
+                  touchAction: 'none',
                 }}
                 onMouseDown={() => !readOnly && setIsResizing(true)}
-                onTouchStart={() => !readOnly && setIsResizing(true)}
+                onTouchStart={(e) => {
+                  if (!readOnly && e.touches.length === 1) {
+                    lastTouchXRef.current = e.touches[0].clientX;
+                    setIsResizing(true);
+                  }
+                }}
                 title="Træk for at ændre størrelse"
               />
             )}
