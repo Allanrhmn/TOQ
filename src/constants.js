@@ -84,17 +84,22 @@ export const FORMATIONS = {
 
 export const PITCH_PRESETS = [
   {
+    label: 'Græsbane',
+    bg: 'linear-gradient(180deg,#1b5e20 0%,#2e7d32 50%,#1b5e20 100%)',
+    stripe: 'rgba(0,0,0,0.08)',
+  },
+  {
     label: 'Klassisk',
     bg: 'linear-gradient(180deg,#166534 0%,#15803d 50%,#166534 100%)',
     stripe: 'rgba(0,0,0,0.05)',
   },
   {
-    label: 'Lys',
+    label: 'Lys grøn',
     bg: 'linear-gradient(180deg,#16a34a 0%,#22c55e 50%,#16a34a 100%)',
     stripe: 'rgba(0,0,0,0.04)',
   },
   {
-    label: 'Mørk',
+    label: 'Mørkegrøn',
     bg: 'linear-gradient(180deg,#052e16 0%,#14532d 50%,#052e16 100%)',
     stripe: 'rgba(255,255,255,0.03)',
   },

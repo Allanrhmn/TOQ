@@ -9,6 +9,7 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
   const [poss, setPoss] = useState('in');
   const [popup, setPopup] = useState(null);
   const [pitchIdx, setPitchIdx] = useState(0);
+  const [pitchScale, setPitchScale] = useState(1);
 
   useEffect(() => {
     if (drafts) setLocalDrafts(drafts);
@@ -57,23 +58,24 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
   return (
     <div className="page">
       <div className="page-title">🏟️ Opstilling</div>
-      <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: 16, flexWrap: 'wrap' }}>
         {localDrafts.map((d, i) => (
           <button
             key={i}
             disabled={readOnly}
             onClick={() => !readOnly && setActiveDraft(i)}
             className={`draft-btn ${activeDraft === i ? 'active' : ''}`}
-            style={{ opacity: readOnly ? 0.6 : 1 }}
+            style={{ opacity: readOnly ? 0.6 : 1, minWidth: '80px' }}
+            title={`Udkast ${i + 1}: ${d.formation} formation`}
           >
-            UDKAST {i + 1}
+            <span style={{ fontSize: '0.75rem', fontWeight: 700 }}>UDKAST {i + 1}</span>
             <br />
             <span style={{ fontWeight: 400, fontSize: '0.65rem' }}>{d.formation}</span>
           </button>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(150px, 200px) 1fr', gap: 16, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div className="card">
             <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>
               Formation
@@ -121,22 +123,38 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
             <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
               🎨 Banefarve
             </div>
-            <div className="pitch-color-bar">
-              {PITCH_PRESETS.map((p, i) => (
-                <div
-                  key={i}
-                  className={`pitch-color-swatch ${pitchIdx === i ? 'active' : ''}`}
-                  title={p.label}
-                  onClick={() => !readOnly && setPitchIdx(i)}
-                  style={{ background: p.bg, opacity: readOnly ? 0.6 : 1, cursor: !readOnly ? 'pointer' : 'default' }}
-                />
-              ))}
-              <span style={{ fontSize: '0.7rem', color: 'var(--green)', fontWeight: 600, marginLeft: 4 }}>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
+              <div className="pitch-color-bar">
+                {PITCH_PRESETS.map((p, i) => (
+                  <div
+                    key={i}
+                    className={`pitch-color-swatch ${pitchIdx === i ? 'active' : ''}`}
+                    title={p.label}
+                    onClick={() => !readOnly && setPitchIdx(i)}
+                    style={{ background: p.bg, opacity: readOnly ? 0.6 : 1, cursor: !readOnly ? 'pointer' : 'default' }}
+                  />
+                ))}
+              </div>
+              <span style={{ fontSize: '0.7rem', color: 'var(--green)', fontWeight: 600 }}>
                 {PITCH_PRESETS[pitchIdx].label}
               </span>
             </div>
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
+              📏 Størrelse ({Math.round(pitchScale * 100)}%)
+            </div>
+            <input
+              type="range"
+              min="0.6"
+              max="1.5"
+              step="0.1"
+              value={pitchScale}
+              onChange={(e) => setPitchScale(parseFloat(e.target.value))}
+              disabled={readOnly}
+              style={{ width: '100%', cursor: readOnly ? 'default' : 'pointer', opacity: readOnly ? 0.6 : 1 }}
+            />
           </div>
-          <div className="pitch" style={{ width: 305, height: 465, background: PITCH_PRESETS[pitchIdx].bg }}>
+          <div style={{ display: 'flex', justifyContent: 'center', overflow: 'auto', padding: '12px 0' }}>
+          <div className="pitch" style={{ width: 305 * pitchScale, height: 465 * pitchScale, background: PITCH_PRESETS[pitchIdx].bg, flexShrink: 0 }}>
             <div
               style={{
                 position: 'absolute',
@@ -240,8 +258,19 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                     zIndex: 10,
                     cursor: !readOnly ? 'pointer' : 'default',
                     opacity: readOnly ? 0.8 : 1,
+                    transition: 'transform 120ms ease, filter 120ms ease',
                   }}
                   onClick={(e) => openPopup(slot.id, e)}
+                  onMouseEnter={(e) => {
+                    if (!readOnly) {
+                      e.currentTarget.style.transform = 'translate(-50%, -50%) scale(1.1)';
+                      e.currentTarget.style.filter = 'drop-shadow(0 0 8px rgba(34, 197, 94, 0.5))';
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translate(-50%,-50%)';
+                    e.currentTarget.style.filter = 'none';
+                  }}
                 >
                   {player ? (
                     <div style={{ position: 'relative', transition: 'transform .15s', transformOrigin: 'bottom center' }}>
@@ -255,10 +284,12 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                             width: 10,
                             height: 10,
                             borderRadius: '50%',
-                            background: '#f87171',
-                            border: '1.5px solid #0f172a',
+                            background: 'var(--red)',
+                            border: '1.5px solid var(--bg-base)',
                             display: 'block',
+                            animation: 'pulse 2s infinite',
                           }}
+                          aria-label={`${player.name} ikke klar`}
                         />
                       )}
                     </div>
@@ -268,20 +299,21 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                         width: 32,
                         height: 38,
                         borderRadius: 6,
-                        background: '#1e293b88',
-                        border: '2px dashed #475569',
+                        background: 'var(--bg-surface)',
+                        border: '2px dashed var(--bg-raised)',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
                         fontSize: '0.5rem',
-                        color: '#475569',
+                        color: 'var(--text-muted)',
                         margin: '0 auto',
+                        transition: 'all 120ms ease',
                       }}
                     >
                       {slot.pos}
                     </div>
                   )}
-                  <div style={{ fontSize: '0.65rem', fontWeight: 600, color: '#f1f5f9', textAlign: 'center', marginTop: 2 }}>
+                  <div style={{ fontSize: '0.65rem', fontWeight: 600, color: 'var(--text-primary)', textAlign: 'center', marginTop: 2, textShadow: '0 1px 2px rgba(0,0,0,0.5)' }}>
                     {player ? (player.name.split(' ').length > 1 ? player.name.split(' ').pop() : player.name) : ''}
                   </div>
                 </div>
@@ -350,6 +382,7 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                 )}
               </>
             )}
+          </div>
           </div>
         </div>
       </div>
