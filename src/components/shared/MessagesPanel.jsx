@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { getName, getToLabel } from '../../utils';
 
-export default function MessagesPanel({ role, messages, setMessages, users, players, currentUser, setNotifs }) {
+export default function MessagesPanel({ role, messages, setMessages, users, players, currentUser }) {
   const [selId, setSelId] = useState(null);
   const [showCompose, setShowCompose] = useState(false);
   const [reply, setReply] = useState(false);

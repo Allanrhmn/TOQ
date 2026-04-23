@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export default function RegisterModal({ users, setUsers, players, setPlayers, onClose, onDone }) {
+export default function RegisterModal({ users, setUsers, setPlayers, onClose, onDone }) {
   const [form, setForm] = useState({ name: '', email: '', pw: '', role: 'player', playerName: '' });
   const [err, setErr] = useState('');
 

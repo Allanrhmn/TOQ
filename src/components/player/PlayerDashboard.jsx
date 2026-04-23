@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { initials, statusDot, fmtDate } from '../../utils';
 
-export default function PlayerDashboard({ player, messages, currentUser, users }) {
+export default function PlayerDashboard({ player, messages, currentUser }) {
   const avatar = player.avatar || initials(player.name);
   const rating = player.rating || '-';
   const stats = player.stats || { matches: 0, goals: 0, assists: 0, yellow: 0, red: 0, minutes: 0, clean: 0 }

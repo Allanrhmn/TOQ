@@ -1,13 +1,9 @@
 import { useState } from 'react';
 import DrawingBoard from '../shared/DrawingBoard/DrawingBoard';
 
-export default function SetPiecesTab({ players, board, setBoard }) {
+export default function SetPiecesTab() {
   const [mode, setMode] = useState('offensive');
   const [plan, setPlan] = useState('');
-
-  const handleBoardUpdate = (newItems, newLines, newZones) => {
-    setBoard({ items: newItems, lines: newLines, zones: newZones });
-  }
 
   return (
     <div className="page">

@@ -14,7 +14,6 @@ import MessagesPanel from '../shared/MessagesPanel';
 const CoachApp = ({
   currentUser,
   users,
-  setUsers,
   players,
   setPlayers,
   messages,
@@ -33,10 +32,7 @@ const CoachApp = ({
   const [teamName, setTeamName] = useLocalStorage('teamName', 'Mit Hold');
   const [editingName, setEditingName] = useState(false);
   const [editNameValue, setEditNameValue] = useState(teamName);
-  const [seasons] = useLocalStorage('seasons', []);
   const [savedDrills, setSavedDrills] = useLocalStorage('savedDrills', []);
-  const [setPiecesBoard, setSetPiecesBoard] = useLocalStorage('setPiecesBoard', { items: [], lines: [], zones: [] });
-  const [drillsBoard, setDrillsBoard] = useLocalStorage('drillsBoard', { items: [], lines: [], zones: [] });
 
   const handleTeamNameSave = () => {
     if (editNameValue.trim()) {
@@ -115,7 +111,7 @@ const CoachApp = ({
       <div className="content-wrapper">
         {tab === 'roster' && <RosterTab players={players} setPlayers={setPlayers} />}
         {tab === 'lineup' && <LineupTab players={players} drafts={drafts} setDrafts={setDrafts} readOnly={false} />}
-        {tab === 'setpieces' && <SetPiecesTab players={players} board={setPiecesBoard} setBoard={setPiecesBoard} />}
+        {tab === 'setpieces' && <SetPiecesTab />}
         {tab === 'drills' && <DrillsTab savedDrills={savedDrills} setSavedDrills={setSavedDrills} />}
         {tab === 'minuteslog' && <MinutesLogTab players={players} setPlayers={setPlayers} />}
         {tab === 'schedule' && <ScheduleTab events={events} setEvents={setEvents} readOnly={false} />}

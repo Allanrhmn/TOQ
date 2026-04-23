@@ -5,17 +5,13 @@ import { makeDraft, posColor, statusDot } from '../../utils';
 
 export default function LineupTab({ players = [], drafts = null, setDrafts = () => {}, readOnly = false }) {
   const [activeDraft, setActiveDraft] = useState(0);
-  const [localDrafts, setLocalDrafts] = useState(drafts || [makeDraft(), makeDraft(), makeDraft()]);
+  const [localDrafts, setLocalDrafts] = useState(() => drafts || [makeDraft(), makeDraft(), makeDraft()]);
   const [poss, setPoss] = useState('in');
   const [popup, setPopup] = useState(null);
   const [pitchIdx, setPitchIdx] = useState(0);
   const [pitchScale, setPitchScale] = useState(1);
   const [isResizing, setIsResizing] = useState(false);
   const lastTouchXRef = useRef(0);
-
-  useEffect(() => {
-    if (drafts) setLocalDrafts(drafts);
-  }, [drafts]);
 
   const draft = localDrafts[activeDraft];
 

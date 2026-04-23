@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { POSITIONS, STATUSES } from '../../constants';
-import { posColor, statusDot } from '../../utils';
+import { statusDot } from '../../utils';
 
 export default function RosterTab({ players, setPlayers }) {
   const [form, setForm] = useState({

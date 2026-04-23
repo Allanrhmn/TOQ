@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { fmtDate } from '../../utils';
 
 export default function ScheduleTab({ events = {}, setEvents = () => {}, readOnly = false }) {
   const [weekOff, setWeekOff] = useState(0);

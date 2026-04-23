@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { posColor, statusDot } from '../../utils';
+import { posColor } from '../../utils';
 
 export default function StatsTab({ players }) {
   const topScorer = useMemo(() => {
@@ -18,7 +18,7 @@ export default function StatsTab({ players }) {
   }, [players]);
 
   const byPos = useMemo(() => {
-    const dist = {}
+    const dist = {};
     (players || []).forEach((p) => {
       dist[p.position] = (dist[p.position] || 0) + 1;
     });

@@ -16,6 +16,7 @@ const PlayerApp = ({
   events,
   setEvents,
   drafts,
+  setDrafts,
   onLogout,
 }) => {
   const [tab, setTab] = useState('overview');
@@ -62,7 +63,7 @@ const PlayerApp = ({
 
       <div className="content-wrapper">
         {tab === 'overview' && player && (
-          <PlayerDashboard player={player} messages={messages} currentUser={currentUser} users={users} />
+          <PlayerDashboard player={player} messages={messages} currentUser={currentUser} />
         )}
         {tab === 'messages' && (
           <MessagesPanel
