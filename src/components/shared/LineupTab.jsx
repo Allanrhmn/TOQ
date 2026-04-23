@@ -10,6 +10,7 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
   const [popup, setPopup] = useState(null);
   const [pitchIdx, setPitchIdx] = useState(0);
   const [pitchScale, setPitchScale] = useState(1);
+  const [isResizing, setIsResizing] = useState(false);
 
   useEffect(() => {
     if (drafts) setLocalDrafts(drafts);
@@ -54,6 +55,40 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
     window.addEventListener('click', close);
     return () => window.removeEventListener('click', close);
   }, []);
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e) => {
+      const deltaX = e.movementX;
+      const newScale = Math.min(1.5, Math.max(0.6, pitchScale + deltaX * 0.005));
+      setPitchScale(newScale);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', (e) => {
+      if (isResizing && e.touches.length === 1) {
+        const touch = e.touches[0];
+        const prevTouch = e.touches[0];
+        const deltaX = touch.clientX - prevTouch.clientX;
+        const newScale = Math.min(1.5, Math.max(0.6, pitchScale + deltaX * 0.005));
+        setPitchScale(newScale);
+      }
+    });
+    window.addEventListener('touchend', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleMouseMove);
+      window.removeEventListener('touchend', handleMouseUp);
+    };
+  }, [isResizing, pitchScale]);
 
   return (
     <div className="page">
@@ -174,7 +209,17 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
             />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', overflow: 'auto', padding: '12px 0' }}>
-          <div className="pitch" style={{ width: 305 * pitchScale, height: 465 * pitchScale, background: PITCH_PRESETS[pitchIdx].bg, flexShrink: 0 }}>
+          <div
+            className="pitch"
+            style={{
+              width: 305 * pitchScale,
+              height: 465 * pitchScale,
+              background: PITCH_PRESETS[pitchIdx].bg,
+              flexShrink: 0,
+              position: 'relative',
+              userSelect: 'none',
+            }}
+          >
             <div
               style={{
                 position: 'absolute',
@@ -401,6 +446,25 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                   </div>
                 )}
               </>
+            )}
+            {!readOnly && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 0,
+                  right: 0,
+                  width: '24px',
+                  height: '24px',
+                  background: 'linear-gradient(135deg, transparent 50%, var(--green) 50%)',
+                  cursor: 'nwse-resize',
+                  borderRadius: '0 0 8px 0',
+                  opacity: isResizing ? 1 : 0.6,
+                  transition: 'opacity 120ms ease',
+                }}
+                onMouseDown={() => !readOnly && setIsResizing(true)}
+                onTouchStart={() => !readOnly && setIsResizing(true)}
+                title="Træk for at ændre størrelse"
+              />
             )}
           </div>
           </div>
