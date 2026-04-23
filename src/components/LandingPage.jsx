@@ -1,5 +1,6 @@
+import { memo } from 'react';
 
-export default function LandingPage({ onCoach, onPlayer, onRegister }) {
+function LandingPage({ onCoach, onPlayer, onRegister }) {
   const features = [
     { icon: '👥', title: 'Holdoversigt', desc: 'Administrér spillere, positioner og status i ét overblik' },
     { icon: '🏟️', title: 'Opstilling', desc: 'Visuel opstillings-builder med 5 formationer og 3 udkast' },
@@ -37,3 +38,5 @@ export default function LandingPage({ onCoach, onPlayer, onRegister }) {
     </div>
   );
 }
+
+export default memo(LandingPage);

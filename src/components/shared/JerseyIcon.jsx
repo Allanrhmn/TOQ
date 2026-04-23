@@ -1,4 +1,6 @@
-export default function JerseyIcon({ number, color, small, dim }) {
+import { memo } from 'react';
+
+function JerseyIcon({ number, color, small, dim }) {
   const c = color || '#22c55e';
   const w = small ? 20 : 32;
   const h = small ? 24 : 38;
@@ -32,3 +34,5 @@ export default function JerseyIcon({ number, color, small, dim }) {
     </svg>
   );
 }
+
+export default memo(JerseyIcon);
