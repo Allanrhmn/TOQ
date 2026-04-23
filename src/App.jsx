@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { INIT_USERS, INIT_PLAYERS, INIT_MESSAGES, INIT_NOTIFS } from './constants';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import LandingPage from './components/LandingPage';
 import LoginModal from './components/LoginModal';
 import RegisterModal from './components/RegisterModal';
-import CoachApp from './components/coach/CoachApp';
-import PlayerApp from './components/player/PlayerApp';
+
+const CoachApp = lazy(() => import('./components/coach/CoachApp'));
+const PlayerApp = lazy(() => import('./components/player/PlayerApp'));
 
 const App = () => {
   const [users, setUsers] = useLocalStorage('tqm_users', INIT_USERS);
@@ -80,41 +81,44 @@ const App = () => {
       )}
 
       {view === 'app' && currentUser && currentUser.role === 'coach' && (
-        <CoachApp
-          currentUser={currentUser}
-          users={users}
-          setUsers={setUsers}
-          players={players}
-          setPlayers={setPlayers}
-          messages={messages}
-          setMessages={setMessages}
-          notifs={notifs}
-          setNotifs={setNotifs}
-          matches={matches}
-          setMatches={setMatches}
-          events={events}
-          setEvents={setEvents}
-          drafts={drafts}
-          setDrafts={setDrafts}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={<div className="page">Indlæser...</div>}>
+          <CoachApp
+            currentUser={currentUser}
+            users={users}
+            players={players}
+            setPlayers={setPlayers}
+            messages={messages}
+            setMessages={setMessages}
+            notifs={notifs}
+            setNotifs={setNotifs}
+            matches={matches}
+            setMatches={setMatches}
+            events={events}
+            setEvents={setEvents}
+            drafts={drafts}
+            setDrafts={setDrafts}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       )}
 
       {view === 'app' && currentUser && currentUser.role === 'player' && (
-        <PlayerApp
-          currentUser={currentUser}
-          players={players}
-          messages={messages}
-          setMessages={setMessages}
-          users={users}
-          notifs={notifs}
-          setNotifs={setNotifs}
-          events={events}
-          setEvents={setEvents}
-          drafts={drafts}
-          setDrafts={setDrafts}
-          onLogout={handleLogout}
-        />
+        <Suspense fallback={<div className="page">Indlæser...</div>}>
+          <PlayerApp
+            currentUser={currentUser}
+            players={players}
+            messages={messages}
+            setMessages={setMessages}
+            users={users}
+            notifs={notifs}
+            setNotifs={setNotifs}
+            events={events}
+            setEvents={setEvents}
+            drafts={drafts}
+            setDrafts={setDrafts}
+            onLogout={handleLogout}
+          />
+        </Suspense>
       )}
     </>
   );
