@@ -608,7 +608,7 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
             width: BW,
             height: BH,
             background: showGrid
-              ? `radial-gradient(circle, rgba(0,0,0,0.25) 0.85px, transparent 0.85px), ${PITCH_PRESETS[pitchIdx].bg}`
+              ? `radial-gradient(circle, rgba(0,0,0,0.4) 0.85px, transparent 0.85px), ${PITCH_PRESETS[pitchIdx].bg}`
               : PITCH_PRESETS[pitchIdx].bg,
             backgroundSize: showGrid ? '28px 28px, 100% 100%' : 'auto',
             position: 'relative',
