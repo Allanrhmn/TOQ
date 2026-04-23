@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from 'react';
 import PitchSVG from './PitchSVG';
 import EIcon from './EIcon';
-import { PALETTE } from '../../../constants';
+import { PALETTE, PITCH_PRESETS } from '../../../constants';
 
 export default function DrawingBoard({ isHalfPitch, extraPanel }) {
   const boardRef = useRef(null);
@@ -33,6 +33,7 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
   const [preview, setPreview] = useState(null);
   const [boardScale, setBoardScale] = useState(1);
   const [isResizing, setIsResizing] = useState(false);
+  const [pitchIdx, setPitchIdx] = useState(0);
   const lastTouchXRef = useRef(0);
 
   const BW = (isHalfPitch ? 510 : 560) * boardScale;
@@ -518,44 +519,65 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
         </div>
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <div style={{ display: 'flex', gap: 6 }}>
-            <button
-              onClick={() => {
-                setItems([]);
-                setLines([]);
-                setZones([]);
-                setSelId(null);
-                setPreview(null);
-              }}
-              style={{
-                padding: '5px 12px',
-                borderRadius: 7,
-                border: '1px solid #d1d5db',
-                background: 'white',
-                color: '#374151',
-                cursor: 'pointer',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-              }}
-            >
-              🗑 Ryd
-            </button>
-            <button
-              onClick={() => setShowGrid((g) => !g)}
-              style={{
-                padding: '5px 12px',
-                borderRadius: 7,
-                border: `1px solid ${showGrid ? '#22c55e' : '#d1d5db'}`,
-                background: showGrid ? '#f0fdf4' : 'white',
-                color: showGrid ? '#166534' : '#374151',
-                cursor: 'pointer',
-                fontSize: '0.75rem',
-                fontWeight: 600,
-              }}
-            >
-              ⊞ Gitter
-            </button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <button
+                onClick={() => {
+                  setItems([]);
+                  setLines([]);
+                  setZones([]);
+                  setSelId(null);
+                  setPreview(null);
+                }}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: 7,
+                  border: '1px solid #d1d5db',
+                  background: 'white',
+                  color: '#374151',
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                }}
+              >
+                🗑 Ryd
+              </button>
+              <button
+                onClick={() => setShowGrid((g) => !g)}
+                style={{
+                  padding: '5px 12px',
+                  borderRadius: 7,
+                  border: `1px solid ${showGrid ? '#22c55e' : '#d1d5db'}`,
+                  background: showGrid ? '#f0fdf4' : 'white',
+                  color: showGrid ? '#166534' : '#374151',
+                  cursor: 'pointer',
+                  fontSize: '0.75rem',
+                  fontWeight: 600,
+                }}
+              >
+                ⊞ Gitter
+              </button>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            {PITCH_PRESETS.map((p, i) => (
+              <button
+                key={i}
+                onClick={() => setPitchIdx(i)}
+                title={p.label}
+                style={{
+                  width: 32,
+                  height: 32,
+                  background: p.bg,
+                  border: pitchIdx === i ? '2px solid #22c55e' : '1px solid #d1d5db',
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  boxShadow: pitchIdx === i ? '0 0 8px rgba(34,197,94,0.4)' : 'none',
+                  transition: 'all 120ms ease',
+                }}
+              />
+            ))}
           </div>
         </div>
         <div
@@ -563,8 +585,8 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
           style={{
             width: BW,
             height: BH,
-            background: '#f8fafc',
-            backgroundImage: showGrid ? 'radial-gradient(circle, #94a3b8 0.85px, transparent 0.85px)' : 'none',
+            background: PITCH_PRESETS[pitchIdx].bg,
+            backgroundImage: showGrid ? `radial-gradient(circle, ${showGrid ? 'rgba(0,0,0,0.15)' : '#94a3b8'} 0.85px, transparent 0.85px)` : 'none',
             backgroundSize: showGrid ? '28px 28px' : 'none',
             position: 'relative',
             borderRadius: 10,
