@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import PitchSVG from './PitchSVG';
 import EIcon from './EIcon';
 import { PALETTE } from '../../../constants';
@@ -31,9 +31,52 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
   });
   const dragRef = useRef(null);
   const [preview, setPreview] = useState(null);
+  const [boardScale, setBoardScale] = useState(1);
+  const [isResizing, setIsResizing] = useState(false);
+  const lastTouchXRef = useRef(0);
 
-  const BW = isHalfPitch ? 510 : 560;
-  const BH = isHalfPitch ? 390 : 520;
+  const BW = (isHalfPitch ? 510 : 560) * boardScale;
+  const BH = (isHalfPitch ? 390 : 520) * boardScale;
+
+  useEffect(() => {
+    if (!isResizing) return;
+
+    const handleMouseMove = (e) => {
+      const deltaX = e.movementX;
+      const newScale = Math.min(1.5, Math.max(0.6, boardScale + deltaX * 0.005));
+      setBoardScale(newScale);
+    };
+
+    const handleMouseUp = () => {
+      setIsResizing(false);
+    };
+
+    const handleTouchMove = (e) => {
+      if (e.touches.length === 1) {
+        const touch = e.touches[0];
+        const deltaX = touch.clientX - lastTouchXRef.current;
+        lastTouchXRef.current = touch.clientX;
+        const newScale = Math.min(1.5, Math.max(0.6, boardScale + deltaX * 0.005));
+        setBoardScale(newScale);
+      }
+    };
+
+    const handleTouchEnd = () => {
+      setIsResizing(false);
+    };
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    window.addEventListener('touchmove', handleTouchMove, { passive: false });
+    window.addEventListener('touchend', handleTouchEnd);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+      window.removeEventListener('touchmove', handleTouchMove);
+      window.removeEventListener('touchend', handleTouchEnd);
+    };
+  }, [isResizing, boardScale]);
 
   const SECTIONS = [
     {
@@ -574,6 +617,43 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
               <EIcon sub={item.sub} color={item.color} small={false} num={item.num} />
             </div>
           ))}
+        </div>
+        <div style={{ position: 'relative' }}>
+          <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginBottom: 8, textAlign: 'center' }}>
+            📏 Størrelse: {Math.round(boardScale * 100)}%
+          </div>
+          <input
+            type="range"
+            min="0.6"
+            max="1.5"
+            step="0.1"
+            value={boardScale}
+            onChange={(e) => setBoardScale(parseFloat(e.target.value))}
+            style={{ width: '100%', marginBottom: 12 }}
+          />
+          <div
+            style={{
+              position: 'absolute',
+              bottom: 12,
+              right: 0,
+              width: '20px',
+              height: '20px',
+              background: 'linear-gradient(135deg, transparent 50%, #22c55e 50%)',
+              cursor: 'nwse-resize',
+              borderRadius: '0 4px 0 0',
+              opacity: isResizing ? 1 : 0.6,
+              transition: 'opacity 120ms ease',
+              touchAction: 'none',
+            }}
+            onMouseDown={() => setIsResizing(true)}
+            onTouchStart={(e) => {
+              if (e.touches.length === 1) {
+                lastTouchXRef.current = e.touches[0].clientX;
+                setIsResizing(true);
+              }
+            }}
+            title="Træk for at ændre størrelse"
+          />
         </div>
         {extraPanel}
       </div>
