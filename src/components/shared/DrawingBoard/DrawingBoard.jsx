@@ -34,10 +34,14 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
   const [boardScale, setBoardScale] = useState(1);
   const [isResizing, setIsResizing] = useState(false);
   const [pitchIdx, setPitchIdx] = useState(0);
+  const [widthMult, setWidthMult] = useState(1);
+  const [heightMult, setHeightMult] = useState(1);
+  const [editingId, setEditingId] = useState(null);
+  const [editingName, setEditingName] = useState('');
   const lastTouchXRef = useRef(0);
 
-  const BW = (isHalfPitch ? 510 : 560) * boardScale;
-  const BH = (isHalfPitch ? 390 : 520) * boardScale;
+  const BW = (isHalfPitch ? 510 : 560) * boardScale * widthMult;
+  const BH = (isHalfPitch ? 390 : 520) * boardScale * heightMult;
 
   useEffect(() => {
     if (!isResizing) return;
@@ -217,9 +221,26 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
       setItems((prev) => prev.filter((it) => it.id !== item.id));
       return;
     }
+    if (e.detail === 2) {
+      setEditingId(item.id);
+      setEditingName(item.name || '');
+      return;
+    }
     setSelId(item.id);
     const pos = gc(e);
     dragRef.current = { id: item.id, ox: pos.x - item.x, oy: pos.y - item.y };
+  }
+
+  function saveItemName() {
+    if (editingId) {
+      setItems((prev) =>
+        prev.map((it) =>
+          it.id === editingId ? { ...it, name: editingName } : it
+        )
+      );
+      setEditingId(null);
+      setEditingName('');
+    }
   }
 
   function renderLineSVG(l, opacity = 1) {
@@ -635,8 +656,27 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
                 transition: 'filter .1s',
               }}
               onMouseDown={(e) => handleItemDown(e, item)}
+              title="Dobbelt-klik for at redigere navn"
             >
               <EIcon sub={item.sub} color={item.color} small={false} num={item.num} />
+              {item.name && (
+                <div
+                  style={{
+                    fontSize: '0.6rem',
+                    color: '#fff',
+                    fontWeight: 700,
+                    textAlign: 'center',
+                    marginTop: 2,
+                    textShadow: '0 1px 3px rgba(0,0,0,0.7)',
+                    maxWidth: 60,
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {item.name}
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -651,6 +691,30 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
             step="0.1"
             value={boardScale}
             onChange={(e) => setBoardScale(parseFloat(e.target.value))}
+            style={{ width: '100%', marginBottom: 12 }}
+          />
+          <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginBottom: 4 }}>
+            📐 Bredde: {Math.round(widthMult * 100)}%
+          </div>
+          <input
+            type="range"
+            min="0.7"
+            max="1.5"
+            step="0.1"
+            value={widthMult}
+            onChange={(e) => setWidthMult(parseFloat(e.target.value))}
+            style={{ width: '100%', marginBottom: 12 }}
+          />
+          <div style={{ fontSize: '0.7rem', color: '#9ca3af', marginBottom: 4 }}>
+            📐 Længde: {Math.round(heightMult * 100)}%
+          </div>
+          <input
+            type="range"
+            min="0.7"
+            max="1.5"
+            step="0.1"
+            value={heightMult}
+            onChange={(e) => setHeightMult(parseFloat(e.target.value))}
             style={{ width: '100%', marginBottom: 12 }}
           />
           <div
@@ -679,6 +743,92 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
         </div>
         {extraPanel}
       </div>
+      {editingId && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+          }}
+          onClick={() => setEditingId(null)}
+        >
+          <div
+            style={{
+              background: '#1e293b',
+              border: '1px solid #334155',
+              borderRadius: 12,
+              padding: 20,
+              minWidth: 300,
+              boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ fontSize: '0.9rem', fontWeight: 700, marginBottom: 12, color: '#e2e8f0' }}>
+              Rediger spillernavn
+            </div>
+            <input
+              type="text"
+              placeholder="Skriv spillerens navn..."
+              value={editingName}
+              onChange={(e) => setEditingName(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') saveItemName();
+                if (e.key === 'Escape') setEditingId(null);
+              }}
+              style={{
+                width: '100%',
+                background: '#0f172a',
+                border: '1.5px solid #334155',
+                color: '#e2e8f0',
+                padding: 10,
+                borderRadius: 8,
+                fontSize: '0.9rem',
+                marginBottom: 12,
+                boxSizing: 'border-box',
+              }}
+              autoFocus
+            />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <button
+                onClick={saveItemName}
+                style={{
+                  flex: 1,
+                  padding: 8,
+                  background: '#22c55e',
+                  color: '#0f172a',
+                  border: 'none',
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                }}
+              >
+                Gem
+              </button>
+              <button
+                onClick={() => setEditingId(null)}
+                style={{
+                  flex: 1,
+                  padding: 8,
+                  background: 'transparent',
+                  color: '#94a3b8',
+                  border: '1px solid #334155',
+                  borderRadius: 6,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  fontSize: '0.85rem',
+                }}
+              >
+                Annuller
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

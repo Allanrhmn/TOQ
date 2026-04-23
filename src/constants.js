@@ -118,6 +118,11 @@ export const PITCH_PRESETS = [
     bg: 'linear-gradient(180deg,#0c0a1a 0%,#1e1b4b 50%,#0c0a1a 100%)',
     stripe: 'rgba(255,255,255,0.02)',
   },
+  {
+    label: 'Hvid',
+    bg: 'linear-gradient(180deg,#f5f5f5 0%,#ffffff 50%,#f5f5f5 100%)',
+    stripe: 'rgba(0,0,0,0.04)',
+  },
 ];
 
 export const PALETTE = ['#22c55e', '#3b82f6', '#eab308', '#ef4444', '#1f2937', '#9ca3af'];
