@@ -55,28 +55,16 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
   }, []);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1400px', margin: '0 auto' }}>
-      <div style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: 16 }}>
-        🏟️ Opstilling
-      </div>
+    <div className="page">
+      <div className="page-title">🏟️ Opstilling</div>
       <div style={{ display: 'flex', gap: 8, marginBottom: 16 }}>
         {localDrafts.map((d, i) => (
           <button
             key={i}
             disabled={readOnly}
             onClick={() => !readOnly && setActiveDraft(i)}
-            style={{
-              padding: '8px 12px',
-              borderRadius: 6,
-              border: `1.5px solid ${activeDraft === i ? '#22c55e' : '#d1d5db'}`,
-              background: activeDraft === i ? '#f0fdf4' : 'white',
-              color: activeDraft === i ? '#166534' : '#374151',
-              cursor: !readOnly && activeDraft !== i ? 'pointer' : 'default',
-              fontWeight: 700,
-              fontSize: '0.85rem',
-              lineHeight: 1.3,
-              opacity: readOnly ? 0.6 : 1,
-            }}
+            className={`draft-btn ${activeDraft === i ? 'active' : ''}`}
+            style={{ opacity: readOnly ? 0.6 : 1 }}
           >
             UDKAST {i + 1}
             <br />
@@ -86,8 +74,8 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
       </div>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, minWidth: 180 }}>
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12, overflow: 'hidden' }}>
-            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111827', marginBottom: 10 }}>
+          <div className="card">
+            <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 10 }}>
               Formation
             </div>
             {Object.keys(FORMATIONS).map((f) => (
@@ -95,20 +83,8 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                 key={f}
                 disabled={readOnly}
                 onClick={() => !readOnly && updateDraft({ formation: f, lineup: {} })}
-                style={{
-                  width: '100%',
-                  marginBottom: 6,
-                  padding: '8px 10px',
-                  borderRadius: 6,
-                  border: `1.5px solid ${draft.formation === f ? '#22c55e' : '#d1d5db'}`,
-                  background: draft.formation === f ? '#f0fdf4' : 'white',
-                  color: draft.formation === f ? '#166534' : '#374151',
-                  cursor: !readOnly ? 'pointer' : 'default',
-                  fontSize: '0.85rem',
-                  fontWeight: 600,
-                  textAlign: 'left',
-                  opacity: readOnly ? 0.6 : 1,
-                }}
+                className={`draft-btn ${draft.formation === f ? 'active' : ''}`}
+                style={{ marginBottom: 6, width: '100%', textAlign: 'left', opacity: readOnly ? 0.6 : 1 }}
               >
                 {f}
               </button>
@@ -117,55 +93,21 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
           {!readOnly && (
             <button
               onClick={() => updateDraft({ lineup: {} })}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                borderRadius: 6,
-                border: '1px solid #fca5a5',
-                background: '#fee2e2',
-                color: '#991b1b',
-                cursor: 'pointer',
-                fontWeight: 600,
-                fontSize: '0.85rem',
-              }}
+              className="btn btn-danger"
+              style={{ width: '100%' }}
             >
               Ryd opstilling
             </button>
           )}
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, padding: 10, fontSize: '0.75rem', color: '#64748b' }}>
+          <div className="card" style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
             <div style={{ marginBottom: 8 }}>
-              <span style={{ color: '#22c55e' }}>●</span> Startende: {usedIds.length}/{slots.length}
+              <span style={{ color: 'var(--green)' }}>●</span> Startende: {usedIds.length}/{slots.length}
             </div>
             {POSITIONS.map((pos) => {
               const cnt = players.filter((p) => startingSet.has(p.id) && p.position === pos).length;
               return cnt > 0 ? (
                 <div key={pos} style={{ marginBottom: 4 }}>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      padding: '2px 6px',
-                      borderRadius: 3,
-                      background:
-                        pos === 'GK'
-                          ? '#fef3c7'
-                          : pos === 'DEF'
-                            ? '#dbeafe'
-                            : pos === 'MID'
-                              ? '#dcfce7'
-                              : '#fee2e2',
-                      color:
-                        pos === 'GK'
-                          ? '#b45309'
-                          : pos === 'DEF'
-                            ? '#0369a1'
-                            : pos === 'MID'
-                              ? '#15803d'
-                              : '#991b1b',
-                      fontSize: '0.7rem',
-                      fontWeight: 700,
-                      marginRight: 4,
-                    }}
-                  >
+                  <span className={`pos-badge pos-${pos}`} style={{ marginRight: 4 }}>
                     {pos}
                   </span>
                   {cnt}
@@ -175,35 +117,26 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
           </div>
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 12px' }}>
-            <div style={{ fontSize: '0.68rem', color: '#64748b', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
+          <div className="card">
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
               🎨 Banefarve
             </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className="pitch-color-bar">
               {PITCH_PRESETS.map((p, i) => (
                 <div
                   key={i}
+                  className={`pitch-color-swatch ${pitchIdx === i ? 'active' : ''}`}
                   title={p.label}
                   onClick={() => !readOnly && setPitchIdx(i)}
-                  style={{
-                    width: 24,
-                    height: 24,
-                    borderRadius: '50%',
-                    background: p.bg,
-                    cursor: !readOnly ? 'pointer' : 'default',
-                    border: `3px solid ${pitchIdx === i ? 'white' : 'transparent'}`,
-                    outline: `2px solid ${pitchIdx === i ? '#22c55e' : 'transparent'}`,
-                    boxSizing: 'border-box',
-                    opacity: readOnly ? 0.6 : 1,
-                  }}
+                  style={{ background: p.bg, opacity: readOnly ? 0.6 : 1, cursor: !readOnly ? 'pointer' : 'default' }}
                 />
               ))}
-              <span style={{ fontSize: '0.7rem', color: '#22c55e', fontWeight: 600, marginLeft: 4 }}>
+              <span style={{ fontSize: '0.7rem', color: 'var(--green)', fontWeight: 600, marginLeft: 4 }}>
                 {PITCH_PRESETS[pitchIdx].label}
               </span>
             </div>
           </div>
-          <div style={{ width: 305, height: 465, background: PITCH_PRESETS[pitchIdx].bg, position: 'relative', borderRadius: 8, overflow: 'hidden' }}>
+          <div className="pitch" style={{ width: 305, height: 465, background: PITCH_PRESETS[pitchIdx].bg }}>
             <div
               style={{
                 position: 'absolute',
@@ -355,41 +288,21 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
               );
             })}
           </div>
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, padding: 12 }}>
-            <div style={{ display: 'flex', background: '#0f172a', borderRadius: 8, padding: 3, marginBottom: 10 }}>
+          <div className="card">
+            <div style={{ display: 'flex', background: 'var(--bg-base)', borderRadius: 8, padding: 3, marginBottom: 10, gap: 0 }}>
               <button
                 onClick={() => !readOnly && setPoss('in')}
                 disabled={readOnly}
-                style={{
-                  flex: 1,
-                  padding: '6px 8px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: poss === 'in' ? '#22c55e' : 'transparent',
-                  color: poss === 'in' ? '#fff' : '#94a3af',
-                  cursor: !readOnly ? 'pointer' : 'default',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  opacity: readOnly ? 0.6 : 1,
-                }}
+                className={`poss-tab ${poss === 'in' ? 'active' : ''}`}
+                style={{ opacity: readOnly ? 0.6 : 1 }}
               >
                 ⚡ Med bold
               </button>
               <button
                 onClick={() => !readOnly && setPoss('out')}
                 disabled={readOnly}
-                style={{
-                  flex: 1,
-                  padding: '6px 8px',
-                  borderRadius: 6,
-                  border: 'none',
-                  background: poss === 'out' ? '#22c55e' : 'transparent',
-                  color: poss === 'out' ? '#fff' : '#94a3af',
-                  cursor: !readOnly ? 'pointer' : 'default',
-                  fontSize: '0.75rem',
-                  fontWeight: 600,
-                  opacity: readOnly ? 0.6 : 1,
-                }}
+                className={`poss-tab ${poss === 'out' ? 'active' : ''}`}
+                style={{ opacity: readOnly ? 0.6 : 1 }}
               >
                 🛡 Uden bold
               </button>
@@ -399,85 +312,39 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
               placeholder={poss === 'in' ? 'Instruktioner med bold…' : 'Defensiv instruktioner…'}
               value={poss === 'in' ? draft.inPoss : draft.outPoss}
               onChange={(e) => updateDraft(poss === 'in' ? { inPoss: e.target.value } : { outPoss: e.target.value })}
-              style={{
-                width: '100%',
-                background: '#0f172a',
-                border: '1px solid #334155',
-                color: '#f1f5f9',
-                borderRadius: 8,
-                padding: '8px 10px',
-                fontSize: '0.8rem',
-                resize: 'vertical',
-                minHeight: 75,
-                outline: 'none',
-                fontFamily: 'inherit',
-                opacity: readOnly ? 0.6 : 1,
-              }}
+              className="form-input"
+              style={{ width: '100%', opacity: readOnly ? 0.6 : 1 }}
             />
           </div>
         </div>
         <div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: '#111827', marginBottom: 8 }}>
+          <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'var(--text-primary)', marginBottom: 8 }}>
             Bænk
           </div>
-          <div style={{ minWidth: 140, background: 'white', border: '1px solid #e2e8f0', borderRadius: 8, padding: '10px 12px', maxHeight: 400, overflowY: 'auto' }}>
+          <div className="card" style={{ minWidth: 140, padding: '10px 12px', maxHeight: 400, overflowY: 'auto' }}>
             {subs.length === 0 ? (
-              <div style={{ padding: '6px 0', color: '#64748b', fontSize: '0.8rem' }}>
+              <div style={{ padding: '6px 0', color: 'var(--text-secondary)', fontSize: '0.8rem' }}>
                 Alle tildelt
               </div>
             ) : (
               <>
                 {subs.slice(0, 10).map((p) => (
-                  <div
-                    key={p.id}
-                    style={{
-                      display: 'flex',
-                      gap: 8,
-                      alignItems: 'center',
-                      padding: '8px 0',
-                      borderBottom: '1px solid #e2e8f0',
-                      cursor: !readOnly ? 'pointer' : 'default',
-                      opacity: readOnly ? 0.6 : 1,
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: 26,
-                        height: 26,
-                        borderRadius: '50%',
-                        background: posColor(p.position),
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        color: '#fff',
-                        fontSize: '0.58rem',
-                        fontWeight: 700,
-                        flexShrink: 0,
-                      }}
-                    >
+                  <div key={p.id} className="sub-item" style={{ opacity: readOnly ? 0.6 : 1, cursor: !readOnly ? 'pointer' : 'default' }}>
+                    <div style={{ width: 26, height: 26, borderRadius: '50%', background: posColor(p.position), display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontSize: '0.58rem', fontWeight: 700, flexShrink: 0 }}>
                       {p.number || '?'}
                     </div>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          color: p.status && p.status !== 'Ready' ? '#f87171' : '#f1f5f9',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
+                      <div style={{ fontSize: '0.75rem', fontWeight: 600, color: p.status && p.status !== 'Ready' ? 'var(--red)' : 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                         {p.name.split(' ')[0]}
                       </div>
-                      <div style={{ fontSize: '0.62rem', color: '#64748b' }}>
+                      <div style={{ fontSize: '0.62rem', color: 'var(--text-secondary)' }}>
                         {p.position}
                       </div>
                     </div>
                   </div>
                 ))}
                 {subs.length > 10 && (
-                  <div style={{ padding: '8px 0', fontSize: '0.7rem', color: '#22c55e', fontWeight: 600 }}>
+                  <div style={{ padding: '8px 0', fontSize: '0.7rem', color: 'var(--green)', fontWeight: 600 }}>
                     +{subs.length - 10} mere på bænken
                   </div>
                 )}
@@ -488,22 +355,14 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
       </div>
       {popup && (
         <div
+          className="player-popup"
           style={{
-            position: 'fixed',
             top: popup.y,
             left: Math.min(popup.x, window.innerWidth - 180),
-            background: 'white',
-            border: '1px solid #e2e8f0',
-            borderRadius: 8,
-            boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
-            zIndex: 100,
-            minWidth: 160,
-            maxHeight: 400,
-            overflowY: 'auto',
           }}
           onClick={(e) => e.stopPropagation()}
         >
-          <div style={{ fontSize: '0.65rem', color: '#64748b', padding: '6px 10px 8px', borderBottom: '1px solid #e2e8f0', marginBottom: 6 }}>
+          <div style={{ fontSize: '0.65rem', color: 'var(--text-secondary)', padding: '6px 10px 8px', borderBottom: '1px solid var(--bg-raised)', marginBottom: 6 }}>
             {slots.find((s) => s.id === popup.slotId)?.pos} — vælg spiller
           </div>
           {players
@@ -511,17 +370,8 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
             .map((p) => (
               <div
                 key={p.id}
+                className="player-popup-item"
                 onClick={() => assignPlayer(p.id)}
-                style={{
-                  padding: '8px 10px',
-                  borderBottom: '1px solid #f3f4f6',
-                  fontSize: '0.75rem',
-                  color: '#111827',
-                  cursor: 'pointer',
-                  display: 'flex',
-                  gap: 6,
-                  alignItems: 'center',
-                }}
               >
                 <span
                   style={{
@@ -533,7 +383,7 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
                   }}
                 />
                 <span style={{ flex: 1 }}>{p.name}</span>
-                <span style={{ fontSize: '0.65rem', color: '#64748b' }}>
+                <span style={{ fontSize: '0.65rem', color: 'var(--text-secondary)' }}>
                   {p.position}
                 </span>
               </div>
@@ -545,13 +395,13 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
           )}
           {draft.lineup[popup.slotId] && (
             <>
-              <hr style={{ margin: '4px 0', border: 'none', borderTop: '1px solid #e2e8f0' }} />
+              <div style={{ margin: '4px 0', border: 'none', borderTop: '1px solid var(--bg-raised)' }} />
               <div
                 onClick={() => assignPlayer(null)}
                 style={{
                   padding: '8px 10px',
                   fontSize: '0.75rem',
-                  color: '#f87171',
+                  color: 'var(--red)',
                   cursor: 'pointer',
                 }}
               >
