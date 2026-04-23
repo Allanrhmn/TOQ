@@ -30,25 +30,21 @@ const PlayerApp = ({
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
-      <nav
-        style={{
-          background: 'white',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '12px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827' }}>⚽ TeamManager</div>
-          <div style={{ display: 'flex', gap: 2 }}>
+    <div className="page-wrapper">
+      <nav className="nav glass">
+        <div className="nav-left">
+          <div className="nav-logo">
+            <div className="nav-logo-text">⚽ TeamManager</div>
+          </div>
+          <div className="nav-tabs" role="tablist">
             {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={tab === t.id ? 'tab-btn active' : 'tab-btn'}
+                role="tab"
+                aria-selected={tab === t.id}
+                aria-label={t.label}
                 title={t.label}
               >
                 {t.icon}
@@ -56,7 +52,7 @@ const PlayerApp = ({
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="nav-right">
           <NotifBell notifs={notifs} setNotifs={setNotifs} uid={currentUser.id} />
           <button className="btn btn-outline" onClick={onLogout}>
             Log ud
@@ -64,7 +60,7 @@ const PlayerApp = ({
         </div>
       </nav>
 
-      <div style={{ padding: 20, maxWidth: 1400, margin: '0 auto' }}>
+      <div className="content-wrapper">
         {tab === 'overview' && player && (
           <PlayerDashboard player={player} messages={messages} currentUser={currentUser} users={users} />
         )}

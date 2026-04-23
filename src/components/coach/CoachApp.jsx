@@ -58,24 +58,14 @@ const CoachApp = ({
   ];
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8fafc' }}>
-      <nav
-        style={{
-          background: 'white',
-          borderBottom: '1px solid #e2e8f0',
-          padding: '12px 20px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
-          <div>
+    <div className="page-wrapper">
+      <nav className="nav glass">
+        <div className="nav-left">
+          <div className="nav-logo">
             {editingName ? (
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <div className="nav-logo-edit">
                 <input
                   className="form-input"
-                  style={{ width: 150 }}
                   value={editNameValue}
                   onChange={(e) => setEditNameValue(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleTeamNameSave()}
@@ -89,20 +79,24 @@ const CoachApp = ({
                 </button>
               </div>
             ) : (
-              <div
+              <button
+                className="nav-logo-text"
                 onClick={() => setEditingName(true)}
-                style={{ fontSize: '1.1rem', fontWeight: 700, color: '#111827', cursor: 'pointer' }}
+                title="Tryk for at redigere holdet navn"
               >
                 {teamName} ✏
-              </div>
+              </button>
             )}
           </div>
-          <div style={{ display: 'flex', gap: 2 }}>
+          <div className="nav-tabs" role="tablist">
             {tabs.map((t) => (
               <button
                 key={t.id}
                 onClick={() => setTab(t.id)}
                 className={tab === t.id ? 'tab-btn active' : 'tab-btn'}
+                role="tab"
+                aria-selected={tab === t.id}
+                aria-label={t.label}
                 title={t.label}
               >
                 {t.icon}
@@ -110,7 +104,7 @@ const CoachApp = ({
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div className="nav-right">
           <NotifBell notifs={notifs} setNotifs={setNotifs} uid={currentUser.id} />
           <button className="btn btn-outline" onClick={onLogout}>
             Log ud
@@ -118,7 +112,7 @@ const CoachApp = ({
         </div>
       </nav>
 
-      <div style={{ padding: 20, maxWidth: 1400, margin: '0 auto' }}>
+      <div className="content-wrapper">
         {tab === 'roster' && <RosterTab players={players} setPlayers={setPlayers} />}
         {tab === 'lineup' && <LineupTab players={players} drafts={drafts} setDrafts={setDrafts} readOnly={false} />}
         {tab === 'setpieces' && <SetPiecesTab players={players} board={setPiecesBoard} setBoard={setPiecesBoard} />}
