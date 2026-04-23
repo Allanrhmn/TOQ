@@ -221,14 +221,15 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
       setItems((prev) => prev.filter((it) => it.id !== item.id));
       return;
     }
-    if (e.detail === 2) {
-      setEditingId(item.id);
-      setEditingName(item.name || '');
-      return;
-    }
     setSelId(item.id);
     const pos = gc(e);
     dragRef.current = { id: item.id, ox: pos.x - item.x, oy: pos.y - item.y };
+  }
+
+  function handleItemDoubleClick(e, item) {
+    e.stopPropagation();
+    setEditingId(item.id);
+    setEditingName(item.name || '');
   }
 
   function saveItemName() {
@@ -606,9 +607,10 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
           style={{
             width: BW,
             height: BH,
-            background: PITCH_PRESETS[pitchIdx].bg,
-            backgroundImage: showGrid ? 'radial-gradient(circle, rgba(255,255,255,0.3) 0.85px, transparent 0.85px)' : 'none',
-            backgroundSize: showGrid ? '28px 28px' : 'none',
+            background: showGrid
+              ? `radial-gradient(circle, rgba(255,255,255,0.3) 0.85px, transparent 0.85px), ${PITCH_PRESETS[pitchIdx].bg}`
+              : PITCH_PRESETS[pitchIdx].bg,
+            backgroundSize: showGrid ? '28px 28px, 100% 100%' : 'auto',
             position: 'relative',
             borderRadius: 10,
             border: '1px solid #e2e8f0',
@@ -656,6 +658,7 @@ export default function DrawingBoard({ isHalfPitch, extraPanel }) {
                 transition: 'filter .1s',
               }}
               onMouseDown={(e) => handleItemDown(e, item)}
+              onDoubleClick={(e) => handleItemDoubleClick(e, item)}
               title="Dobbelt-klik for at redigere navn"
             >
               <EIcon sub={item.sub} color={item.color} small={false} num={item.num} />
