@@ -81,12 +81,12 @@ export default function MessagesPanel({ role, messages, setMessages, users, play
   return (
     <div className="page">
       <div className="page-title">💬 Beskeder</div>
-      <div style={{ display: 'flex', gap: 16, height: 'calc(100vh - 160px)' }}>
-        <div style={{ width: 280, flexShrink: 0, display: 'flex', flexDirection: 'column' }}>
+      <div className="msg-layout">
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
           <button className="btn btn-green" onClick={handleCompose} style={{ width: '100%', marginBottom: 12 }}>
             ＋ {role === 'coach' ? 'Ny besked' : 'Skriv til coach'}
           </button>
-          <div className="card" style={{ flex: 1, overflow: 'auto', padding: 0 }}>
+          <div className="msg-list">
             {messages.length === 0 ? (
               <div className="empty-state">Ingen beskeder endnu</div>
             ) : (
@@ -95,36 +95,18 @@ export default function MessagesPanel({ role, messages, setMessages, users, play
                 return (
                   <div
                     key={msg.id}
+                    className={`msg-item ${selId === msg.id ? 'sel' : ''} ${isUnread ? 'msg-unread' : ''}`}
                     onClick={() => {
                       setSelId(msg.id);
                       markAsRead(msg.id);
                     }}
-                    style={{
-                      padding: '12px 14px',
-                      borderBottom: '1px solid #e2e8f0',
-                      cursor: 'pointer',
-                      background: selId === msg.id ? '#f0fdf4' : isUnread ? '#fef3c7' : 'white',
-                      transition: 'background 0.1s',
-                    }}
                   >
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'flex-start',
-                        gap: 6,
-                        marginBottom: 4,
-                      }}
-                    >
-                      <div style={{ fontWeight: 600, color: '#111827', fontSize: '0.8rem', flex: 1, overflow: 'hidden' }}>
-                        {msg.fromName}
-                      </div>
-                      {isUnread && (
-                        <span style={{ width: 6, height: 6, background: '#22c55e', borderRadius: '50%', flexShrink: 0, marginTop: 2 }} />
-                      )}
+                    <div className="msg-from">
+                      <span>{msg.fromName}</span>
+                      {isUnread && <span className="msg-udot" />}
                     </div>
-                    <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: 3 }}>{msg.subject}</div>
-                    <div style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{msg.date}</div>
+                    <div className="msg-subj">{msg.subject}</div>
+                    <div className="msg-date">{msg.date}</div>
                   </div>
                 );
               })
@@ -135,21 +117,16 @@ export default function MessagesPanel({ role, messages, setMessages, users, play
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
           {selected ? (
             <>
-              <div className="card" style={{ flex: 1, overflow: 'auto', marginBottom: 12 }}>
-                <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: 2 }}>Fra</div>
-                  <div style={{ fontWeight: 600, color: '#111827' }}>{selected.fromName}</div>
+              <div className="msg-panel" style={{ flex: 1, marginBottom: 12 }}>
+                <div className="msg-ph">
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: 2 }}>Fra</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{selected.fromName}</div>
                 </div>
-                <div style={{ marginBottom: 12 }}>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: 2 }}>Emne</div>
-                  <div style={{ fontWeight: 600, color: '#111827' }}>{selected.subject}</div>
+                <div className="msg-ph" style={{ borderBottom: '1px solid var(--bg-raised)' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: 2 }}>Emne</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{selected.subject}</div>
                 </div>
-                <div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', marginBottom: 6 }}>Besked</div>
-                  <div style={{ color: '#374151', lineHeight: 1.5, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                    {selected.body}
-                  </div>
-                </div>
+                <div className="msg-pbody">{selected.body}</div>
               </div>
               <div style={{ display: 'flex', gap: 8 }}>
                 <button className="btn btn-green" onClick={handleReply} style={{ flex: 1 }}>
@@ -158,7 +135,7 @@ export default function MessagesPanel({ role, messages, setMessages, users, play
               </div>
             </>
           ) : (
-            <div className="card" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="msg-panel" style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <div className="empty-state">Vælg en besked for at læse den</div>
             </div>
           )}
@@ -167,26 +144,17 @@ export default function MessagesPanel({ role, messages, setMessages, users, play
 
       {(showCompose || reply) && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-          }}
+          className="modal-overlay"
           onClick={() => {
             setShowCompose(false);
             setReply(false);
           }}
         >
           <div
-            className="card"
-            style={{ width: 450, maxHeight: '80vh', overflow: 'auto' }}
+            className="modal"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="card-title" style={{ marginTop: 0 }}>
+            <div className="modal-title">
               {reply ? 'Svar på besked' : 'Ny besked'}
             </div>
 
@@ -228,39 +196,29 @@ export default function MessagesPanel({ role, messages, setMessages, users, play
               <label htmlFor="msg-body">Besked</label>
               <textarea
                 id="msg-body"
+                className="msg-reply-in"
                 placeholder="Skriv din besked..."
                 value={cForm.body}
                 onChange={(e) => setCForm({ ...cForm, body: e.target.value })}
-                style={{
-                  width: '100%',
-                  height: 140,
-                  padding: 10,
-                  borderRadius: 6,
-                  border: '1px solid #d1d5db',
-                  fontSize: '0.75rem',
-                  fontFamily: 'monospace',
-                  resize: 'none',
-                }}
+                style={{ height: 140 }}
               />
             </div>
 
-            <div style={{ display: 'flex', gap: 8 }}>
-              <button
-                className="btn btn-green"
-                onClick={reply ? sendReply : sendMessage}
-                style={{ flex: 1 }}
-              >
-                {reply ? '↩ Svar' : '📤 Send'}
-              </button>
+            <div className="modal-footer">
               <button
                 className="btn btn-outline"
                 onClick={() => {
                   setShowCompose(false);
                   setReply(false);
                 }}
-                style={{ flex: 1 }}
               >
                 Annuller
+              </button>
+              <button
+                className="btn btn-green"
+                onClick={reply ? sendReply : sendMessage}
+              >
+                {reply ? '↩ Svar' : '📤 Send'}
               </button>
             </div>
           </div>
