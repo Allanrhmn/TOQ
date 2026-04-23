@@ -120,24 +120,44 @@ export default function LineupTab({ players = [], drafts = null, setDrafts = () 
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <div className="card">
-            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
-              🎨 Banefarve
+            <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 12 }}>
+              🎨 Vælg banefarve
             </div>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 12, flexWrap: 'wrap' }}>
-              <div className="pitch-color-bar">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(50px, 1fr))', gap: 8 }}>
                 {PITCH_PRESETS.map((p, i) => (
-                  <div
+                  <button
                     key={i}
-                    className={`pitch-color-swatch ${pitchIdx === i ? 'active' : ''}`}
-                    title={p.label}
                     onClick={() => !readOnly && setPitchIdx(i)}
-                    style={{ background: p.bg, opacity: readOnly ? 0.6 : 1, cursor: !readOnly ? 'pointer' : 'default' }}
-                  />
+                    disabled={readOnly}
+                    title={p.label}
+                    style={{
+                      background: p.bg,
+                      border: pitchIdx === i ? '3px solid var(--green)' : '2px solid var(--bg-raised)',
+                      borderRadius: '8px',
+                      padding: '8px',
+                      cursor: readOnly ? 'default' : 'pointer',
+                      opacity: readOnly ? 0.6 : 1,
+                      transition: 'all 150ms ease',
+                      boxShadow: pitchIdx === i ? '0 0 12px rgba(34, 197, 94, 0.5)' : 'none',
+                      position: 'relative',
+                      height: '60px',
+                    }}
+                    onMouseEnter={(e) => !readOnly && (e.currentTarget.style.transform = 'scale(1.05)')}
+                    onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                  >
+                    <span style={{ fontSize: '0.65rem', fontWeight: 700, color: 'white', textShadow: '0 1px 3px rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                      {p.label}
+                    </span>
+                  </button>
                 ))}
               </div>
-              <span style={{ fontSize: '0.7rem', color: 'var(--green)', fontWeight: 600 }}>
-                {PITCH_PRESETS[pitchIdx].label}
-              </span>
+              <div style={{ padding: '10px 12px', background: 'var(--bg-base)', borderRadius: '8px', textAlign: 'center' }}>
+                <div style={{ fontSize: '0.7rem', color: 'var(--text-secondary)', marginBottom: 4 }}>Nuværende:</div>
+                <div style={{ fontSize: '0.9rem', fontWeight: 700, color: 'var(--green)' }}>
+                  {PITCH_PRESETS[pitchIdx].label}
+                </div>
+              </div>
             </div>
             <div style={{ fontSize: '0.68rem', color: 'var(--text-secondary)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px', marginBottom: 8 }}>
               📏 Størrelse ({Math.round(pitchScale * 100)}%)
