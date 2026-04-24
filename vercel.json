@@ -2,39 +2,5 @@
   "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
-  "framework": "nextjs",
-  "env": [
-    {
-      "key": "DATABASE_URL",
-      "description": "PostgreSQL database connection string"
-    },
-    {
-      "key": "JWT_SECRET",
-      "description": "Secret key for JWT signing"
-    },
-    {
-      "key": "STRIPE_SECRET_KEY",
-      "description": "Stripe secret API key"
-    },
-    {
-      "key": "STRIPE_PUBLISHABLE_KEY",
-      "description": "Stripe publishable API key"
-    },
-    {
-      "key": "STRIPE_WEBHOOK_SECRET",
-      "description": "Stripe webhook signing secret"
-    },
-    {
-      "key": "ANTHROPIC_API_KEY",
-      "description": "Claude AI API key"
-    },
-    {
-      "key": "NETS_EASY_API_KEY",
-      "description": "Nets Easy payment API key"
-    },
-    {
-      "key": "NEXT_PUBLIC_API_URL",
-      "description": "API base URL for client-side requests"
-    }
-  ]
+  "framework": "nextjs"
 }
