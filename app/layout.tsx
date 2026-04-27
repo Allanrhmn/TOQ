@@ -13,58 +13,151 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="bg-white text-black">
-        <header className="border-b">
-          <nav className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 className="text-2xl font-bold tracking-wide">CREAT</h1>
-            <div className="space-x-6 flex items-center">
-              <a href="/" className="hover:underline font-medium">Home</a>
-              <a href="/products" className="hover:underline font-medium">Shop</a>
-              <a href="#" className="hover:underline font-medium">Contact</a>
-              <a href="#" className="hover:underline font-medium">Account</a>
+      <body>
+        {/* Header */}
+        <header className="sticky top-0 z-50 bg-white border-b border-gray-200">
+          <nav className="max-w-7xl mx-auto px-4 md:px-6 py-4 flex items-center justify-between">
+            <div className="flex-1">
+              <a href="/" className="text-2xl md:text-3xl font-bold tracking-tight hover:opacity-70 transition">
+                CREAT
+              </a>
             </div>
+            <div className="hidden md:flex items-center space-x-10">
+              <a href="/products" className="text-sm font-medium hover:opacity-70 transition">
+                Shop
+              </a>
+              <a href="#" className="text-sm font-medium hover:opacity-70 transition">
+                Lookbook
+              </a>
+              <a href="#" className="text-sm font-medium hover:opacity-70 transition">
+                About
+              </a>
+              <a href="#" className="text-sm font-medium hover:opacity-70 transition">
+                Contact
+              </a>
+            </div>
+            <div className="hidden md:flex ml-auto">
+              <a href="#" className="text-sm font-medium hover:opacity-70 transition">
+                Account
+              </a>
+            </div>
+            {/* Mobile menu toggle */}
+            <button className="md:hidden ml-6 space-y-1.5">
+              <div className="w-6 h-0.5 bg-black"></div>
+              <div className="w-6 h-0.5 bg-black"></div>
+              <div className="w-6 h-0.5 bg-black"></div>
+            </button>
           </nav>
         </header>
-        <main className="min-h-screen">{children}</main>
-        <footer className="bg-black text-white mt-16 py-12">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="grid md:grid-cols-4 gap-8 mb-8">
+
+        {/* Main Content */}
+        <main className="w-full">
+          {children}
+        </main>
+
+        {/* Footer */}
+        <footer className="bg-black text-white">
+          <div className="max-w-7xl mx-auto px-4 md:px-6 py-16 md:py-20">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-16">
+              {/* Shop */}
               <div>
-                <h3 className="font-bold mb-4">Shop</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li><a href="#" className="hover:text-white">New Arrivals</a></li>
-                  <li><a href="#" className="hover:text-white">Tees</a></li>
-                  <li><a href="#" className="hover:text-white">Outerwear</a></li>
-                  <li><a href="#" className="hover:text-white">Accessories</a></li>
+                <h3 className="font-bold text-sm uppercase tracking-widest mb-6">Shop</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a href="/products" className="text-gray-400 hover:text-white transition text-sm">
+                      All Products
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      New Arrivals
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Sale
+                    </a>
+                  </li>
                 </ul>
               </div>
+
+              {/* Company */}
               <div>
-                <h3 className="font-bold mb-4">Company</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li><a href="#" className="hover:text-white">About</a></li>
-                  <li><a href="#" className="hover:text-white">Contact</a></li>
-                  <li><a href="#" className="hover:text-white">Lookbook</a></li>
+                <h3 className="font-bold text-sm uppercase tracking-widest mb-6">Company</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      About Us
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Contact
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Lookbook
+                    </a>
+                  </li>
                 </ul>
               </div>
+
+              {/* Support */}
               <div>
-                <h3 className="font-bold mb-4">Support</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li><a href="#" className="hover:text-white">Shipping</a></li>
-                  <li><a href="#" className="hover:text-white">Returns</a></li>
-                  <li><a href="#" className="hover:text-white">FAQ</a></li>
+                <h3 className="font-bold text-sm uppercase tracking-widest mb-6">Support</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Shipping Info
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Returns
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      FAQ
+                    </a>
+                  </li>
                 </ul>
               </div>
+
+              {/* Legal */}
               <div>
-                <h3 className="font-bold mb-4">Legal</h3>
-                <ul className="space-y-2 text-gray-400">
-                  <li><a href="#" className="hover:text-white">Privacy</a></li>
-                  <li><a href="#" className="hover:text-white">Terms</a></li>
-                  <li><a href="#" className="hover:text-white">Cookies</a></li>
+                <h3 className="font-bold text-sm uppercase tracking-widest mb-6">Legal</h3>
+                <ul className="space-y-3">
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Terms of Service
+                    </a>
+                  </li>
+                  <li>
+                    <a href="#" className="text-gray-400 hover:text-white transition text-sm">
+                      Cookies
+                    </a>
+                  </li>
                 </ul>
               </div>
             </div>
-            <div className="border-t border-gray-800 pt-8 text-center text-gray-400">
-              <p>&copy; 2024 CREAT. All rights reserved. Creatness starts with Sabr.</p>
+
+            {/* Divider */}
+            <div className="border-t border-gray-800 pt-8">
+              <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                <p className="text-sm text-gray-400">
+                  &copy; 2024 CREAT. All rights reserved.
+                </p>
+                <p className="text-sm text-gray-400">
+                  Creatness starts with Sabr.
+                </p>
+              </div>
             </div>
           </div>
         </footer>

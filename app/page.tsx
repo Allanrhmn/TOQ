@@ -4,76 +4,108 @@ export default function Home() {
   return (
     <div className="w-full">
       {/* Hero Section */}
-      <section className="bg-black text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 text-center space-y-6">
-          <h1 className="text-6xl md:text-7xl font-bold tracking-tight">CREATNESS STARTS WITH SABR</h1>
-          <p className="text-xl md:text-2xl text-gray-300">
-            Limited edition streetwear and accessories
-          </p>
+      <section className="relative w-full h-screen bg-black text-white flex items-center justify-center">
+        <div className="absolute inset-0 bg-gradient-to-b from-black/50 to-black/70 z-10"></div>
+        <div className="relative z-20 text-center max-w-4xl mx-auto px-4 space-y-8">
+          <div className="space-y-4">
+            <p className="text-lg md:text-xl text-gray-300 font-light tracking-widest uppercase">
+              Limited Edition Streetwear
+            </p>
+            <h1 className="text-5xl md:text-7xl font-bold leading-tight tracking-tight">
+              CREATNESS STARTS WITH SABR
+            </h1>
+            <p className="text-lg md:text-xl text-gray-300 max-w-2xl mx-auto">
+              Exclusive limited edition pieces. Don't miss the new drops.
+            </p>
+          </div>
           <Link
             href="/products"
-            className="inline-block bg-white text-black px-8 py-4 rounded-lg hover:bg-gray-200 font-bold text-lg transition"
+            className="inline-block bg-white text-black px-10 py-4 rounded font-bold text-lg hover:bg-gray-200 transition duration-200"
           >
             Shop Now
           </Link>
         </div>
       </section>
 
-      {/* New Items Live Section */}
-      <section className="max-w-7xl mx-auto px-4 py-16">
-        <h2 className="text-4xl font-bold mb-4">New Items Live Now</h2>
-        <p className="text-gray-600 text-lg mb-12">
-          Discover our latest collection of exclusive drops
-        </p>
+      {/* New Items Section */}
+      <section className="py-20 md:py-32">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="mb-16">
+            <p className="text-sm md:text-base text-gray-500 uppercase tracking-widest mb-4">
+              New collection
+            </p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">New Items Live Now</h2>
+            <p className="text-lg text-gray-600 max-w-2xl">
+              Our latest exclusive drops. Limited quantities. Don't sleep on these.
+            </p>
+          </div>
+        </div>
       </section>
 
-      {/* Features Section */}
-      <section className="bg-gray-50 py-16">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6">
-              <h3 className="text-2xl font-bold mb-3">Limited Edition</h3>
-              <p className="text-gray-600">
-                Exclusive pieces that won't be restocked. Get them while they last.
+      {/* Stats Section */}
+      <section className="bg-black text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+            <div className="space-y-4">
+              <h3 className="text-4xl md:text-5xl font-bold">Limited Edition</h3>
+              <p className="text-gray-400">
+                Each drop is carefully curated. Once sold out, they're gone forever.
               </p>
             </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold mb-3">Premium Quality</h3>
-              <p className="text-gray-600">
-                High-quality materials and craftsmanship in every piece.
+            <div className="space-y-4">
+              <h3 className="text-4xl md:text-5xl font-bold">Premium Quality</h3>
+              <p className="text-gray-400">
+                Hand-selected materials and meticulous craftsmanship in every piece.
               </p>
             </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold mb-3">Fast Shipping</h3>
-              <p className="text-gray-600">
-                Quick delivery across Denmark with reliable shipping partners.
+            <div className="space-y-4">
+              <h3 className="text-4xl md:text-5xl font-bold">Fast Shipping</h3>
+              <p className="text-gray-400">
+                Quick delivery across Denmark with reliable tracking included.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Email Signup Section */}
-      <section className="bg-black text-white py-16">
-        <div className="max-w-2xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold mb-6">Join Our Email List</h2>
-          <p className="text-gray-300 mb-8">
-            Find out about new drops and exclusive releases before anyone else
-          </p>
-          <form className="flex gap-2">
+      {/* CTA Section */}
+      <section className="py-20 md:py-32">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 text-center space-y-8">
+          <div className="space-y-4">
+            <h2 className="text-4xl md:text-5xl font-bold">Stay in the Loop</h2>
+            <p className="text-lg text-gray-600">
+              Get notified about new drops and exclusive releases before they sell out.
+            </p>
+          </div>
+          <form className="flex flex-col sm:flex-row gap-3 max-w-xl mx-auto">
             <input
               type="email"
               placeholder="Enter your email"
-              className="flex-1 px-4 py-3 rounded bg-white text-black placeholder-gray-500"
+              className="flex-1 px-6 py-4 border border-gray-300 rounded bg-white text-black placeholder-gray-500 focus:outline-none focus:border-black transition"
               required
             />
             <button
               type="submit"
-              className="px-6 py-3 bg-white text-black font-bold rounded hover:bg-gray-200 transition"
+              className="px-8 py-4 bg-black text-white font-bold rounded hover:bg-gray-900 transition duration-200 whitespace-nowrap"
             >
               Subscribe
             </button>
           </form>
+          <p className="text-sm text-gray-500">
+            We respect your privacy. Unsubscribe anytime.
+          </p>
+        </div>
+      </section>
+
+      {/* Featured Link */}
+      <section className="border-t border-gray-200 py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
+          <Link
+            href="/products"
+            className="inline-block text-lg font-bold hover:underline transition"
+          >
+            View Full Collection →
+          </Link>
         </div>
       </section>
     </div>
