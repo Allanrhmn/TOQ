@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1 {
+  font-size: clamp(24px, 8vw, 48px);
+  font-weight: bold;
+}
+
+h2 {
+  font-size: clamp(20px, 6vw, 36px);
+  font-weight: bold;
+}
+
+@layer components {
+  .btn {
+    @apply px-6 py-3 bg-black text-white font-bold rounded-lg hover:bg-gray-900 transition;
+  }
+
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-black text-black font-bold rounded-lg hover:bg-gray-100 transition;
+  }
+}
