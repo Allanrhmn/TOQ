@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { getAuthenticatedAdmin } from "@/lib/admin-auth";
 
 export async function GET(
   _request: NextRequest,
@@ -33,6 +34,15 @@ export async function PUT(
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await getAuthenticatedAdmin(request);
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     const body = await request.json();
 
     const product = await db.product.update({
@@ -61,10 +71,19 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
+    const admin = await getAuthenticatedAdmin(request);
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
     await db.product.delete({
       where: { id: params.id },
     });

@@ -113,19 +113,18 @@ export async function POST(request: NextRequest) {
               },
             });
 
-            await db.product.updateMany({
-              where: {
-                id: {
-                  in: (await db.orderItem.findMany({
-                    where: { orderId: metadata.orderId },
-                    select: { productId: true },
-                  })).map((item) => item.productId),
-                },
-              },
-              data: {
-                stock: { increment: 1 },
-              },
+            const orderItems = await db.orderItem.findMany({
+              where: { orderId: metadata.orderId },
             });
+
+            for (const item of orderItems) {
+              await db.product.update({
+                where: { id: item.productId },
+                data: {
+                  stock: { increment: item.quantity },
+                },
+              });
+            }
           }
         }
 
